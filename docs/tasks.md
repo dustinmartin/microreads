@@ -27,24 +27,24 @@
 **Test:** Migration runs cleanly; can insert and query a row in each table via a throwaway script.
 
 ### 1.3 EPUB Parsing Service
-- [ ] Install epub parsing library (`epub2` or `@nicolo-ribaudo/epub`)
-- [ ] Create `lib/epub.ts` with a `parseEpub(filePath)` function
-- [ ] Extract metadata: title, author, cover image
-- [ ] Extract ordered chapter list from the spine
-- [ ] Extract HTML content for each chapter
-- [ ] Save cover image to `covers/[bookId].jpg`
+- [x] Install epub parsing library (`epub2` or `@nicolo-ribaudo/epub`)
+- [x] Create `lib/epub.ts` with a `parseEpub(filePath)` function
+- [x] Extract metadata: title, author, cover image
+- [x] Extract ordered chapter list from the spine
+- [x] Extract HTML content for each chapter
+- [x] Save cover image to `covers/[bookId].jpg`
 
 **Test:** Pass a sample `.epub` file; verify extracted title, author, chapter count, and cover file on disk.
 
 ### 1.4 Chunking Algorithm
-- [ ] Create `lib/chunker.ts` with `chunkBook(chapters, targetWords)` function
-- [ ] Implement paragraph extraction from chapter HTML
-- [ ] Implement word counting utility
-- [ ] Respect paragraph boundaries (never split mid-paragraph)
-- [ ] Prefer chapter boundaries when buffer >= 60% of target
-- [ ] Split long chapters at ~120% of target word count
-- [ ] Preserve inline HTML formatting (em, strong, blockquote) within chunks
-- [ ] Return array of `{ chapterTitle, contentHtml, contentText, wordCount }`
+- [x] Create `lib/chunker.ts` with `chunkBook(chapters, targetWords)` function
+- [x] Implement paragraph extraction from chapter HTML
+- [x] Implement word counting utility
+- [x] Respect paragraph boundaries (never split mid-paragraph)
+- [x] Prefer chapter boundaries when buffer >= 60% of target
+- [x] Split long chapters at ~120% of target word count
+- [x] Preserve inline HTML formatting (em, strong, blockquote) within chunks
+- [x] Return array of `{ chapterTitle, contentHtml, contentText, wordCount }`
 
 **Test:** Feed chapters of known word counts; verify chunk count, no mid-paragraph splits, word counts within expected range.
 
@@ -64,9 +64,9 @@
 ## Phase 2: Core Reading Experience
 
 ### 2.1 Library Page — API
-- [ ] Create `GET /api/books` returning all books with progress info
-- [ ] Include computed fields: progress percentage, chunks read count
-- [ ] Sort: active first, then queued, then completed
+- [x] Create `GET /api/books` returning all books with progress info
+- [x] Include computed fields: progress percentage, chunks read count
+- [x] Sort: active first, then queued, then completed
 
 **Test:** Seed DB with books in various statuses; verify response shape and sort order.
 
