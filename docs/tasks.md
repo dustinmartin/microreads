@@ -17,12 +17,12 @@
 **Test:** `npm run dev` starts without errors; Tailwind classes render.
 
 ### 1.2 Database Schema & Migrations
-- [ ] Define `books` table schema in Drizzle (all columns from spec)
-- [ ] Define `chunks` table schema with FK to books
-- [ ] Define `reading_log` table schema with FKs to chunks and books
-- [ ] Define `settings` table schema (key/value)
-- [ ] Generate and run initial migration
-- [ ] Create a `db.ts` module exporting the Drizzle client instance
+- [x] Define `books` table schema in Drizzle (all columns from spec)
+- [x] Define `chunks` table schema with FK to books
+- [x] Define `reading_log` table schema with FKs to chunks and books
+- [x] Define `settings` table schema (key/value)
+- [x] Generate and run initial migration
+- [x] Create a `db.ts` module exporting the Drizzle client instance
 
 **Test:** Migration runs cleanly; can insert and query a row in each table via a throwaway script.
 
