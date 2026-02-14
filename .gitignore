@@ -39,6 +39,7 @@ next-env.d.ts
 # app data
 /data/
 /covers/
+*.epub
 
 # playwright
 e2e/.auth/
