@@ -20,7 +20,7 @@ interface BookSection {
   coverUrl: string | null;
   chapterTitle: string;
   progress: number;
-  teaserParagraphs: string[];
+  chunkHtml: string;
   readUrl: string;
 }
 
@@ -92,22 +92,18 @@ export function DigestEmail({
               </table>
 
               {/* Teaser */}
-              {book.teaserParagraphs.map((paragraph, paragraphIdx) => (
-                <Text
-                  key={`${book.id}-teaser-${paragraphIdx}`}
-                  style={
-                    paragraphIdx === book.teaserParagraphs.length - 1
-                      ? teaserTextLast
-                      : teaserText
-                  }
-                >
-                  {paragraph}
-                </Text>
-              ))}
+              <Section style={chunkSection}>
+                <div
+                  style={chunkContent}
+                  dangerouslySetInnerHTML={{
+                    __html: normalizeChunkHtml(book.chunkHtml),
+                  }}
+                />
+              </Section>
 
               {/* CTA Button */}
               <Button style={ctaButton} href={book.readUrl}>
-                Continue Reading
+                Read on Web
               </Button>
 
               {index < books.length - 1 && <Hr style={bookDivider} />}
@@ -149,6 +145,77 @@ export function DigestEmail({
 }
 
 export default DigestEmail;
+
+function applyInlineStyle(
+  html: string,
+  tag: string,
+  style: string
+): string {
+  const tagRegex = new RegExp(`<${tag}(\\s[^>]*)?>`, "gi");
+  return html.replace(tagRegex, (match, attrs = "") => {
+    if (/\sstyle\s*=/.test(match)) {
+      return match;
+    }
+    return `<${tag}${attrs} style="${style}">`;
+  });
+}
+
+function normalizeChunkHtml(chunkHtml: string): string {
+  let html = chunkHtml;
+
+  html = applyInlineStyle(
+    html,
+    "p",
+    "margin:0 0 16px 0;line-height:1.65;font-size:15px;color:#3D3832;"
+  );
+  html = applyInlineStyle(
+    html,
+    "blockquote",
+    "margin:0 0 16px 0;padding-left:12px;border-left:3px solid #E8E4DC;color:#4A433D;"
+  );
+  html = applyInlineStyle(
+    html,
+    "ul",
+    "margin:0 0 16px 20px;padding:0;line-height:1.65;font-size:15px;color:#3D3832;"
+  );
+  html = applyInlineStyle(
+    html,
+    "ol",
+    "margin:0 0 16px 20px;padding:0;line-height:1.65;font-size:15px;color:#3D3832;"
+  );
+  html = applyInlineStyle(
+    html,
+    "li",
+    "margin:0 0 6px 0;line-height:1.65;font-size:15px;color:#3D3832;"
+  );
+  html = applyInlineStyle(
+    html,
+    "h1",
+    "margin:0 0 12px 0;line-height:1.3;font-size:22px;color:#2D2A26;"
+  );
+  html = applyInlineStyle(
+    html,
+    "h2",
+    "margin:0 0 12px 0;line-height:1.3;font-size:20px;color:#2D2A26;"
+  );
+  html = applyInlineStyle(
+    html,
+    "h3",
+    "margin:0 0 10px 0;line-height:1.35;font-size:18px;color:#2D2A26;"
+  );
+  html = applyInlineStyle(
+    html,
+    "img",
+    "max-width:100%;height:auto;border:0;display:block;margin:12px 0;"
+  );
+  html = applyInlineStyle(
+    html,
+    "a",
+    "color:#5B4A3F;text-decoration:underline;"
+  );
+
+  return html;
+}
 
 /* ---------- Styles ---------- */
 
@@ -235,16 +302,14 @@ const chapterInfo: React.CSSProperties = {
   margin: "0",
 };
 
-const teaserText: React.CSSProperties = {
+const chunkSection: React.CSSProperties = {
+  margin: "14px 0 16px 0",
+};
+
+const chunkContent: React.CSSProperties = {
   fontSize: "15px",
   lineHeight: "1.65",
   color: "#3D3832",
-  margin: "14px 0 0 0",
-};
-
-const teaserTextLast: React.CSSProperties = {
-  ...teaserText,
-  margin: "14px 0 16px 0",
 };
 
 const ctaButton: React.CSSProperties = {
