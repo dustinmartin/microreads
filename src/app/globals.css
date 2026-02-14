@@ -126,3 +126,90 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Reading view typography — premium e-reader feel */
+.prose-reader {
+  font-family: var(--font-serif), "Georgia", "Times New Roman", serif;
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: #2c2c2c;
+}
+
+.dark .prose-reader {
+  color: #e8e4dc;
+}
+
+.prose-reader p {
+  margin-bottom: 1.25em;
+}
+
+.prose-reader h1,
+.prose-reader h2,
+.prose-reader h3,
+.prose-reader h4,
+.prose-reader h5,
+.prose-reader h6 {
+  font-weight: 600;
+  margin-top: 1.75em;
+  margin-bottom: 0.75em;
+  line-height: 1.3;
+}
+
+.prose-reader h1 {
+  font-size: 1.6em;
+}
+
+.prose-reader h2 {
+  font-size: 1.35em;
+}
+
+.prose-reader h3 {
+  font-size: 1.15em;
+}
+
+.prose-reader blockquote {
+  border-left: 3px solid #2c2c2c20;
+  padding-left: 1.25em;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  color: #2c2c2c99;
+}
+
+.dark .prose-reader blockquote {
+  border-left-color: #e8e4dc30;
+  color: #e8e4dc99;
+}
+
+.prose-reader em {
+  font-style: italic;
+}
+
+.prose-reader strong {
+  font-weight: 600;
+}
+
+.prose-reader ul,
+.prose-reader ol {
+  padding-left: 1.5em;
+  margin-bottom: 1.25em;
+}
+
+.prose-reader li {
+  margin-bottom: 0.35em;
+}
+
+.prose-reader a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose-reader hr {
+  border: none;
+  border-top: 1px solid #2c2c2c15;
+  margin: 2em 0;
+}
+
+.dark .prose-reader hr {
+  border-top-color: #e8e4dc15;
+}

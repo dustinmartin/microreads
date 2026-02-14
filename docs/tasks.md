@@ -79,13 +79,13 @@
 **Test:** Renders seeded books in correct sections; progress bars reflect DB state.
 
 ### 2.3 Upload Flow — UI
-- [ ] Create `/upload` page with drag-and-drop + file picker for `.epub`
-- [ ] On file select, POST to `/api/books`
-- [ ] Display extracted metadata (cover, title, author) for confirmation
-- [ ] Chunk size slider (300–3000 words) with default 1000
-- [ ] Show estimated chunk count and completion time preview
-- [ ] "Add to Active" / "Add to Queue" buttons that PATCH book status
-- [ ] Redirect to library on success
+- [x] Create `/upload` page with drag-and-drop + file picker for `.epub`
+- [x] On file select, POST to `/api/books`
+- [x] Display extracted metadata (cover, title, author) for confirmation
+- [x] Chunk size slider (300–3000 words) with default 1000
+- [x] Show estimated chunk count and completion time preview
+- [x] "Add to Active" / "Add to Queue" buttons that PATCH book status
+- [x] Redirect to library on success
 
 **Test:** Upload an epub; see metadata preview; adjust slider; confirm and verify book appears in library.
 
@@ -97,23 +97,23 @@
 **Test:** Request a mid-book chunk; verify prev/next IDs, correct content, book metadata present.
 
 ### 2.5 Reading View — UI
-- [ ] Create `/read/[chunkId]` page
-- [ ] Top bar: book title, chapter title, "Chunk X of Y"
-- [ ] Content area with serif font (Literata/Source Serif Pro), ~60ch width, 1.7–1.8 line-height
-- [ ] Light mode: off-white (#FAFAF7) background, dark charcoal text
-- [ ] Dark mode: warm dark (#1A1A1A) background, soft cream (#E8E4DC) text
-- [ ] Previous / Next navigation buttons
-- [ ] Thin progress bar at page bottom showing position in book
+- [x] Create `/read/[chunkId]` page
+- [x] Top bar: book title, chapter title, "Chunk X of Y"
+- [x] Content area with serif font (Literata/Source Serif Pro), ~60ch width, 1.7–1.8 line-height
+- [x] Light mode: off-white (#FAFAF7) background, dark charcoal text
+- [x] Dark mode: warm dark (#1A1A1A) background, soft cream (#E8E4DC) text
+- [x] Previous / Next navigation buttons
+- [x] Thin progress bar at page bottom showing position in book
 
 **Test:** Navigate to a chunk; verify typography, dark/light toggle, prev/next navigation works.
 
 ### 2.6 Mark as Read
-- [ ] Create `POST /api/chunks/[id]/read` route
-- [ ] Insert `reading_log` entry with `read_at = now`, `read_via` param
-- [ ] Advance `books.current_chunk_index` if this chunk is the current one
-- [ ] If final chunk, set book status to `completed` and `completed_at`
-- [ ] Add "Mark as Read" button to reading view UI
-- [ ] After marking, auto-navigate to next chunk (or show completion message)
+- [x] Create `POST /api/chunks/[id]/read` route
+- [x] Insert `reading_log` entry with `read_at = now`, `read_via` param
+- [x] Advance `books.current_chunk_index` if this chunk is the current one
+- [x] If final chunk, set book status to `completed` and `completed_at`
+- [x] Add "Mark as Read" button to reading view UI
+- [x] After marking, auto-navigate to next chunk (or show completion message)
 
 **Test:** Mark a chunk read; verify reading_log row, book index advanced. Mark final chunk; verify book completed.
 
@@ -132,21 +132,21 @@
 **Test:** Render email with mock data; verify HTML output is valid and links are correct.
 
 ### 3.2 Digest Send Logic
-- [ ] Create `lib/digest.ts` with `sendDailyDigest()` function
-- [ ] Query active books, get next unread chunk for each
-- [ ] Generate teaser text (first ~100 words of plain text content)
-- [ ] Compose email with all book sections
-- [ ] Create `reading_log` entries with `sent_at` for each chunk
-- [ ] Send via Nodemailer SMTP using env config
-- [ ] Handle edge case: book completed mid-rotation (include celebration, activate next queued book)
-- [ ] Handle edge case: no active books (skip or send empty-list email)
+- [x] Create `lib/digest.ts` with `sendDailyDigest()` function
+- [x] Query active books, get next unread chunk for each
+- [x] Generate teaser text (first ~100 words of plain text content)
+- [x] Compose email with all book sections
+- [x] Create `reading_log` entries with `sent_at` for each chunk
+- [x] Send via Nodemailer SMTP using env config
+- [x] Handle edge case: book completed mid-rotation (include celebration, activate next queued book)
+- [x] Handle edge case: no active books (skip or send empty-list email)
 
 **Test:** Seed two active books; call `sendDailyDigest()`; verify reading_log entries created, email sent (use test SMTP).
 
 ### 3.3 Digest API & Preview
-- [ ] Create `POST /api/digest/send` route (manual trigger)
-- [ ] Make idempotent: if already sent today, re-send same chunks without advancing
-- [ ] Create `GET /api/digest/preview` returning the email HTML without sending
+- [x] Create `POST /api/digest/send` route (manual trigger)
+- [x] Make idempotent: if already sent today, re-send same chunks without advancing
+- [x] Create `GET /api/digest/preview` returning the email HTML without sending
 
 **Test:** Trigger send; trigger again same day; verify no double-advance. Preview returns valid HTML.
 
