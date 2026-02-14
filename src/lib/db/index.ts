@@ -9,7 +9,7 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const sqlite = new Database(path.join(dbDir, "microread.db"));
+const sqlite = new Database(process.env.DATABASE_PATH || path.join(dbDir, "microread.db"));
 sqlite.pragma("journal_mode = WAL");
 sqlite.pragma("foreign_keys = ON");
 
