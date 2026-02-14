@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
 import { BookOpen, Plus } from "lucide-react";
@@ -44,12 +43,10 @@ function BookCard({ book }: { book: Book }) {
       {/* Cover image or placeholder */}
       <div className="relative h-28 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
         {book.coverImage ? (
-          <Image
-            src={book.coverImage}
+          <img
+            src={`/api/${book.coverImage}`}
             alt={`Cover of ${book.title}`}
-            fill
-            className="object-cover"
-            sizes="80px"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

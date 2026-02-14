@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { db } from "@/lib/db";
 import { books, chunks } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -147,12 +146,10 @@ export default async function BookDetailPage({
           {/* Cover */}
           <div className="relative h-48 w-32 flex-shrink-0 overflow-hidden rounded-xl bg-[#2C2C2C]/5 shadow-md dark:bg-[#E8E4DC]/5">
             {book.coverImage ? (
-              <Image
-                src={book.coverImage}
+              <img
+                src={`/api/${book.coverImage}`}
                 alt={`Cover of ${book.title}`}
-                fill
-                className="object-cover"
-                sizes="128px"
+                className="absolute inset-0 h-full w-full object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
