@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { db } from "@/lib/db";
 import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq, and, desc, asc, gte, sql } from "drizzle-orm";
@@ -6,6 +8,35 @@ import { DigestEmail } from "@/lib/email/digest-template";
 import type { DigestEmailProps } from "@/lib/email/digest-template";
 import { createElement } from "react";
 import { generateChunkToken } from "@/lib/tokens";
+
+interface MailAttachment {
+  filename: string;
+  path: string;
+  cid: string;
+  contentType: string;
+}
+
+function buildCoverAttachment(
+  coverImage: string,
+  bookId: string
+): MailAttachment | null {
+  const filePath = path.join(process.cwd(), coverImage);
+  if (!fs.existsSync(filePath)) return null;
+  const ext = path.extname(filePath).toLowerCase();
+  const mimeTypes: Record<string, string> = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+  };
+  return {
+    filename: `cover-${bookId}${ext}`,
+    path: filePath,
+    cid: `cover-${bookId}`,
+    contentType: mimeTypes[ext] ?? "image/jpeg",
+  };
+}
 
 interface DigestResult {
   sent: boolean;
@@ -100,6 +131,7 @@ export async function buildDigestProps(): Promise<{
     wordCount: number;
     isLastChunk: boolean;
   }>;
+  attachments: MailAttachment[];
 } | null> {
   const baseUrl = getBaseUrl();
   const today = todayDateString();
@@ -121,6 +153,7 @@ export async function buildDigestProps(): Promise<{
     wordCount: number;
     isLastChunk: boolean;
   }> = [];
+  const attachments: MailAttachment[] = [];
 
   let totalWordCount = 0;
 
@@ -145,9 +178,14 @@ export async function buildDigestProps(): Promise<{
         ? Math.round((book.currentChunkIndex / book.totalChunks) * 100)
         : 0;
 
-    const coverUrl = book.coverImage
-      ? `${baseUrl}/${book.coverImage}`
-      : null;
+    let coverUrl: string | null = null;
+    if (book.coverImage) {
+      const attachment = buildCoverAttachment(book.coverImage, book.id);
+      if (attachment) {
+        attachments.push(attachment);
+        coverUrl = `cid:${attachment.cid}`;
+      }
+    }
 
     const token = generateChunkToken(chunk.id);
 
@@ -193,7 +231,7 @@ export async function buildDigestProps(): Promise<{
     libraryUrl: baseUrl,
   };
 
-  return { props, chunkDetails };
+  return { props, chunkDetails, attachments };
 }
 
 /**
@@ -212,7 +250,7 @@ export async function sendDailyDigest(): Promise<DigestResult> {
       return { sent: false, bookCount: 0 };
     }
 
-    const { props, chunkDetails } = result;
+    const { props, chunkDetails, attachments } = result;
     const now = new Date().toISOString();
 
     // Create reading_log entries with sentAt for each chunk being sent
@@ -277,7 +315,7 @@ export async function sendDailyDigest(): Promise<DigestResult> {
     const element = createElement(DigestEmail, props);
     const subject = `Your Micro Reads - ${props.date}`;
 
-    await sendEmail(emailTo, subject, element);
+    await sendEmail(emailTo, subject, element, attachments);
 
     return { sent: true, bookCount: props.books.length };
   } catch (error) {

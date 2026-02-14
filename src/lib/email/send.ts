@@ -25,7 +25,8 @@ function createTransport() {
 export async function sendEmail(
   to: string,
   subject: string,
-  reactElement: ReactElement
+  reactElement: ReactElement,
+  attachments?: nodemailer.SendMailOptions["attachments"]
 ): Promise<void> {
   const transport = createTransport();
   const html = await render(reactElement);
@@ -35,5 +36,6 @@ export async function sendEmail(
     to,
     subject,
     html,
+    attachments,
   });
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pause, Play, CheckCircle2, RotateCcw, Trash2, Zap } from "lucide-react";
+import { Pause, Play, CheckCircle2, RotateCcw, Trash2, Zap, Send } from "lucide-react";
 
 export default function BookControls({
   bookId,
@@ -14,6 +14,8 @@ export default function BookControls({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [sendingDigest, setSendingDigest] = useState(false);
+  const [digestMessage, setDigestMessage] = useState<string | null>(null);
 
   async function updateStatus(newStatus: string) {
     setLoading(true);
@@ -40,6 +42,25 @@ export default function BookControls({
       router.refresh();
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function resendDigest() {
+    setSendingDigest(true);
+    setDigestMessage(null);
+    try {
+      const res = await fetch("/api/digest/send", { method: "POST" });
+      const data = await res.json();
+      if (data.sent) {
+        setDigestMessage("Email sent!");
+      } else {
+        setDigestMessage(data.error || data.message || "No email sent");
+      }
+    } catch {
+      setDigestMessage("Failed to send");
+    } finally {
+      setSendingDigest(false);
+      setTimeout(() => setDigestMessage(null), 3000);
     }
   }
 
@@ -129,6 +150,21 @@ export default function BookControls({
         <Trash2 className="h-4 w-4" />
         {confirmDelete ? "Are you sure?" : "Delete Book"}
       </button>
+
+      <button
+        onClick={resendDigest}
+        disabled={loading || sendingDigest}
+        className={`${buttonBase} bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800/30 dark:text-stone-300 dark:hover:bg-stone-800/50`}
+      >
+        <Send className="h-4 w-4" />
+        {sendingDigest ? "Sending..." : "Resend Email"}
+      </button>
+
+      {digestMessage && (
+        <span className="text-sm text-stone-600 dark:text-stone-400">
+          {digestMessage}
+        </span>
+      )}
     </div>
   );
 }

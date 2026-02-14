@@ -33,7 +33,7 @@ export async function POST() {
 
       const element = createElement(DigestEmail, result.props);
       const subject = `Your Micro Reads - ${result.props.date}`;
-      await sendEmail(emailTo, subject, element);
+      await sendEmail(emailTo, subject, element, result.attachments);
 
       return NextResponse.json({
         sent: true,
