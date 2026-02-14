@@ -172,17 +172,17 @@
 **Test:** Access library without cookie — redirected. Login with correct password — cookie set, access granted.
 
 ### 4.2 Email Link Tokens
-- [ ] Generate short-lived signed tokens (HMAC or JWT) for each chunk link in emails
-- [ ] Accept token as query param on `/read/[chunkId]?token=...`
-- [ ] Validate token without requiring session cookie
-- [ ] Token expires after 7 days
+- [x] Generate short-lived signed tokens (HMAC or JWT) for each chunk link in emails
+- [x] Accept token as query param on `/read/[chunkId]?token=...`
+- [x] Validate token without requiring session cookie
+- [x] Token expires after 7 days
 
 **Test:** Generate token for chunk; access with valid token — renders. Expired/tampered token — rejected.
 
 ### 4.3 API Trigger Auth
-- [ ] Read bearer token from settings
-- [ ] Create `POST /api/trigger` route protected by bearer token
-- [ ] Calls `sendDailyDigest()` on valid auth
+- [x] Read bearer token from settings
+- [x] Create `POST /api/trigger` route protected by bearer token
+- [x] Calls `sendDailyDigest()` on valid auth
 
 **Test:** Call with valid bearer — digest sent. Call with wrong token — 401.
 
@@ -199,26 +199,26 @@
 **Test:** View a partially-read book; verify chapter read indicators match reading_log data.
 
 ### 5.2 Book Controls
-- [ ] PATCH `/api/books/[id]` supporting status changes (pause, resume, mark complete)
-- [ ] Add Pause / Resume / Mark Complete buttons to book detail page
-- [ ] Paused books excluded from daily digest
-- [ ] Implement "Restart" action: reset `current_chunk_index` to 0, set status active (preserve reading_log)
+- [x] PATCH `/api/books/[id]` supporting status changes (pause, resume, mark complete)
+- [x] Add Pause / Resume / Mark Complete buttons to book detail page
+- [x] Paused books excluded from daily digest
+- [x] Implement "Restart" action: reset `current_chunk_index` to 0, set status active (preserve reading_log)
 
 **Test:** Pause a book; trigger digest; verify it's skipped. Resume; verify it's included again.
 
 ### 5.3 Chunk Size Adjustment
-- [ ] Add chunk size control to book detail page
-- [ ] On change: delete chunks with `index > current_chunk_index`
-- [ ] Re-chunk remaining epub content with new size
-- [ ] Insert new chunks and update `total_chunks`
-- [ ] Preserve existing reading_log entries
+- [x] Add chunk size control to book detail page
+- [x] On change: delete chunks with `index > current_chunk_index`
+- [x] Re-chunk remaining epub content with new size
+- [x] Insert new chunks and update `total_chunks`
+- [x] Preserve existing reading_log entries
 
 **Test:** Change chunk size mid-book; verify old chunks preserved, new chunks regenerated, total updated.
 
 ### 5.4 Book Deletion
-- [ ] `DELETE /api/books/[id]` removes book, all chunks, all reading_log entries
-- [ ] Delete epub file and cover image from disk
-- [ ] Add delete button with confirmation dialog to book detail page
+- [x] `DELETE /api/books/[id]` removes book, all chunks, all reading_log entries
+- [x] Delete epub file and cover image from disk
+- [x] Add delete button with confirmation dialog to book detail page
 
 **Test:** Delete a book; verify all related DB rows and files removed.
 
@@ -243,11 +243,11 @@
 **Test:** Page renders with seeded data; charts display correct values.
 
 ### 6.3 Settings Page
-- [ ] `GET /api/settings` and `PUT /api/settings` routes
-- [ ] Create `/settings` page with form fields for: email address, send time, Ollama endpoint/model
-- [ ] "Send Today's Digest Now" button (calls `/api/digest/send`)
-- [ ] "Send Test Email" button
-- [ ] Seed default settings on first run
+- [x] `GET /api/settings` and `PUT /api/settings` routes
+- [x] Create `/settings` page with form fields for: email address, send time, Ollama endpoint/model
+- [x] "Send Today's Digest Now" button (calls `/api/digest/send`)
+- [x] "Send Test Email" button
+- [x] Seed default settings on first run
 
 **Test:** Update send time; verify setting persisted. Hit manual trigger; verify email sent.
 

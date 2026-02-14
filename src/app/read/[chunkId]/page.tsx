@@ -1,17 +1,51 @@
 import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { books, chunks } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AiRecap } from "./ai-recap";
+import { verifyChunkToken } from "@/lib/tokens";
+import { cookies } from "next/headers";
+
+async function isSessionValid(): Promise<boolean> {
+  try {
+    const authSecret = process.env.AUTH_SECRET;
+    if (!authSecret) return true; // No auth configured, allow through
+
+    const cookieStore = await cookies();
+    const session = cookieStore.get("session")?.value;
+    if (!session) return false;
+
+    // Replicate the middleware's HMAC check
+    const { createHmac } = await import("crypto");
+    const hmac = createHmac("sha256", authSecret);
+    hmac.update("authenticated");
+    const expected = hmac.digest("hex");
+    return session === expected;
+  } catch {
+    return false;
+  }
+}
 
 export default async function ReadPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ chunkId: string }>;
+  searchParams: Promise<{ token?: string }>;
 }) {
   const { chunkId } = await params;
+  const { token } = await searchParams;
+
+  // Check authentication: either a valid session cookie or a valid token
+  const hasValidSession = await isSessionValid();
+  const hasValidToken = token ? verifyChunkToken(token, chunkId) : false;
+
+  if (!hasValidSession && !hasValidToken) {
+    redirect("/login");
+  }
 
   // Fetch the chunk
   const [chunk] = await db.select().from(chunks).where(eq(chunks.id, chunkId));

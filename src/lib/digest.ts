@@ -5,6 +5,7 @@ import { sendEmail } from "@/lib/email/send";
 import { DigestEmail } from "@/lib/email/digest-template";
 import type { DigestEmailProps } from "@/lib/email/digest-template";
 import { createElement } from "react";
+import { generateChunkToken } from "@/lib/tokens";
 
 interface DigestResult {
   sent: boolean;
@@ -148,6 +149,8 @@ export async function buildDigestProps(): Promise<{
       ? `${baseUrl}/${book.coverImage}`
       : null;
 
+    const token = generateChunkToken(chunk.id);
+
     bookSections.push({
       id: book.id,
       title: book.title,
@@ -156,7 +159,7 @@ export async function buildDigestProps(): Promise<{
       chapterTitle: chunk.chapterTitle || "Untitled Chapter",
       progress,
       teaser,
-      readUrl: `${baseUrl}/read/${chunk.id}`,
+      readUrl: `${baseUrl}/read/${chunk.id}?token=${token}`,
     });
 
     const isLastChunk = book.currentChunkIndex >= book.totalChunks - 1;

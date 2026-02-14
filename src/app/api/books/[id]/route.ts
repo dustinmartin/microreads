@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { books, chunks } from "@/lib/db/schema";
+import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import fs from "node:fs";
+import path from "node:path";
 
 export async function GET(
   _request: NextRequest,
@@ -95,4 +97,88 @@ export async function GET(
     chapters,
     stats,
   });
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
+  const [book] = await db.select().from(books).where(eq(books.id, id));
+  if (!book) {
+    return NextResponse.json({ error: "Book not found" }, { status: 404 });
+  }
+
+  const body = await request.json();
+  const { status, restart } = body as {
+    status?: "active" | "paused" | "queued" | "completed";
+    restart?: boolean;
+  };
+
+  const updates: Record<string, unknown> = {};
+
+  if (restart) {
+    updates.currentChunkIndex = 0;
+    updates.status = "active";
+    updates.completedAt = null;
+  } else if (status) {
+    updates.status = status;
+    if (status === "completed") {
+      updates.completedAt = new Date().toISOString();
+    }
+  }
+
+  if (Object.keys(updates).length > 0) {
+    await db.update(books).set(updates).where(eq(books.id, id));
+  }
+
+  const [updatedBook] = await db.select().from(books).where(eq(books.id, id));
+
+  return NextResponse.json(updatedBook);
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
+  const [book] = await db.select().from(books).where(eq(books.id, id));
+  if (!book) {
+    return NextResponse.json({ error: "Book not found" }, { status: 404 });
+  }
+
+  // Delete reading_log entries first (before chunks cascade deletes them)
+  await db.delete(readingLog).where(eq(readingLog.bookId, id));
+
+  // Delete all chunks for this book
+  await db.delete(chunks).where(eq(chunks.bookId, id));
+
+  // Delete the book row
+  await db.delete(books).where(eq(books.id, id));
+
+  // Delete epub file from disk
+  try {
+    const epubPath = path.resolve(process.cwd(), book.epubPath);
+    if (fs.existsSync(epubPath)) {
+      fs.unlinkSync(epubPath);
+    }
+  } catch {
+    // File might not exist, ignore
+  }
+
+  // Delete cover image from disk
+  if (book.coverImage) {
+    try {
+      const coverPath = path.resolve(process.cwd(), book.coverImage);
+      if (fs.existsSync(coverPath)) {
+        fs.unlinkSync(coverPath);
+      }
+    } catch {
+      // File might not exist, ignore
+    }
+  }
+
+  return NextResponse.json({ success: true });
 }

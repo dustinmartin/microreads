@@ -15,6 +15,8 @@ import {
   BarChart3,
   Clock,
 } from "lucide-react";
+import BookControls from "./_components/book-controls";
+import ChunkSizeControl from "./_components/chunk-size-control";
 
 export default async function BookDetailPage({
   params,
@@ -180,6 +182,11 @@ export default async function BookDetailPage({
               </div>
             </div>
 
+            {/* Book controls */}
+            <div className="mt-3">
+              <BookControls bookId={bookId} status={book.status} />
+            </div>
+
             {/* Progress bar */}
             <div className="mt-4">
               <div className="flex items-center justify-between text-xs text-[#2C2C2C]/60 dark:text-[#E8E4DC]/50">
@@ -222,6 +229,11 @@ export default async function BookDetailPage({
               book.status === "completed" ? "Done" : formattedEstCompletion
             }
           />
+        </div>
+
+        {/* Chunk size control */}
+        <div className="mt-6">
+          <ChunkSizeControl bookId={bookId} currentSize={book.chunkSizeWords} />
         </div>
 
         {/* Chapter list */}
