@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { buildChapterRuns } from "@/lib/chapter-runs";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -25,24 +26,8 @@ export async function GET(
     .where(eq(chunks.bookId, id))
     .orderBy(chunks.index);
 
-  // Build chapter list: group chunks by chapterTitle
-  const chapterMap = new Map<
-    string,
-    { title: string; chunkIndices: number[]; chunkIds: string[]; status: "read" | "unread" | "partial" }
-  >();
-
-  for (const chunk of allChunks) {
-    const title = chunk.chapterTitle ?? "Untitled";
-    if (!chapterMap.has(title)) {
-      chapterMap.set(title, { title, chunkIndices: [], chunkIds: [], status: "unread" });
-    }
-    const chapter = chapterMap.get(title)!;
-    chapter.chunkIndices.push(chunk.index);
-    chapter.chunkIds.push(chunk.id);
-  }
-
-  // Determine read/unread status for each chapter
-  const chapters = Array.from(chapterMap.values()).map((chapter) => {
+  // Build chapter list as contiguous title runs
+  const chapters = buildChapterRuns(allChunks).map((chapter) => {
     const readCount = chapter.chunkIndices.filter(
       (idx) => idx < book.currentChunkIndex
     ).length;

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { buildChapterRuns } from "@/lib/chapter-runs";
 import {
   BookOpen,
   CheckCircle2,
@@ -46,27 +47,8 @@ export default async function BookDetailPage({
     .where(eq(readingLog.bookId, bookId));
   const readChunkIds = new Set(logEntries.map((e) => e.chunkId));
 
-  // Build chapter list grouped by chapterTitle
-  const chapterMap = new Map<
-    string,
-    {
-      title: string;
-      chunkIndices: number[];
-      chunkIds: string[];
-    }
-  >();
-
-  for (const chunk of allChunks) {
-    const title = chunk.chapterTitle ?? "Untitled";
-    if (!chapterMap.has(title)) {
-      chapterMap.set(title, { title, chunkIndices: [], chunkIds: [] });
-    }
-    const chapter = chapterMap.get(title)!;
-    chapter.chunkIndices.push(chunk.index);
-    chapter.chunkIds.push(chunk.id);
-  }
-
-  const chapters = Array.from(chapterMap.values()).map((chapter) => {
+  // Build chapter list by contiguous title runs
+  const chapters = buildChapterRuns(allChunks).map((chapter) => {
     const readCount = chapter.chunkIds.filter(
       (id, i) =>
         chapter.chunkIndices[i] < book.currentChunkIndex ||

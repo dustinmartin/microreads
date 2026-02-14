@@ -17,6 +17,12 @@ export interface Chunk {
   wordCount: number;
 }
 
+interface BufferedParagraph {
+  html: string;
+  wordCount: number;
+  chapterTitle: string;
+}
+
 /**
  * Strip HTML tags from a string and return plain text.
  */
@@ -76,13 +82,34 @@ function extractParagraphs(html: string): string[] {
  * Join an array of paragraph HTML strings and derive the combined HTML,
  * plain text, and word count.
  */
-function joinParagraphs(
-  paragraphs: string[],
-  chapterTitle: string
-): Chunk {
-  const contentHtml = paragraphs.join("\n");
+function resolveChunkChapterTitle(buffer: BufferedParagraph[]): string {
+  const byChapter = new Map<string, number>();
+
+  for (const item of buffer) {
+    byChapter.set(
+      item.chapterTitle,
+      (byChapter.get(item.chapterTitle) ?? 0) + item.wordCount
+    );
+  }
+
+  let bestTitle = buffer[0]?.chapterTitle ?? "Untitled";
+  let bestWords = -1;
+
+  for (const [title, words] of byChapter.entries()) {
+    if (words > bestWords) {
+      bestWords = words;
+      bestTitle = title;
+    }
+  }
+
+  return bestTitle;
+}
+
+function joinParagraphs(buffer: BufferedParagraph[]): Chunk {
+  const contentHtml = buffer.map((item) => item.html).join("\n");
   const contentText = stripHtml(contentHtml);
   const wordCount = countWords(contentHtml);
+  const chapterTitle = resolveChunkChapterTitle(buffer);
   return { chapterTitle, contentHtml, contentText, wordCount };
 }
 
@@ -93,7 +120,8 @@ function joinParagraphs(
  *  - Never split mid-paragraph.
  *  - If adding a paragraph would exceed 120% of targetWords and the buffer
  *    already has content, flush the buffer first.
- *  - At chapter boundaries, flush if the buffer is at least 60% of targetWords.
+ *  - At chapter boundaries, flush any buffered content so chunks do not cross
+ *    chapter title boundaries.
  *  - Any remaining buffer at the end becomes the final chunk.
  */
 export function chunkBook(
@@ -101,34 +129,38 @@ export function chunkBook(
   targetWords: number
 ): Chunk[] {
   const chunks: Chunk[] = [];
-  let buffer: string[] = [];
+  let buffer: BufferedParagraph[] = [];
   let bufferWordCount = 0;
-  let currentChapterTitle = "";
 
   for (const chapter of chapters) {
     const paragraphs = extractParagraphs(chapter.html);
-    currentChapterTitle = chapter.title;
+    const currentChapterTitle = chapter.title || "Untitled";
 
     for (const paragraph of paragraphs) {
       const words = countWords(paragraph);
+      const item: BufferedParagraph = {
+        html: paragraph,
+        wordCount: words,
+        chapterTitle: currentChapterTitle,
+      };
 
       if (
         bufferWordCount + words > targetWords * 1.2 &&
         bufferWordCount > 0
       ) {
         // Flush current buffer before starting a new one
-        chunks.push(joinParagraphs(buffer, currentChapterTitle));
-        buffer = [paragraph];
+        chunks.push(joinParagraphs(buffer));
+        buffer = [item];
         bufferWordCount = words;
       } else {
-        buffer.push(paragraph);
+        buffer.push(item);
         bufferWordCount += words;
       }
     }
 
-    // Prefer chapter boundaries as chunk boundaries
-    if (bufferWordCount >= targetWords * 0.6) {
-      chunks.push(joinParagraphs(buffer, currentChapterTitle));
+    // Always flush at chapter boundaries to avoid cross-chapter chunk drift.
+    if (bufferWordCount > 0) {
+      chunks.push(joinParagraphs(buffer));
       buffer = [];
       bufferWordCount = 0;
     }
@@ -136,7 +168,7 @@ export function chunkBook(
 
   // Flush any remaining content
   if (buffer.length > 0) {
-    chunks.push(joinParagraphs(buffer, currentChapterTitle));
+    chunks.push(joinParagraphs(buffer));
   }
 
   return chunks;
