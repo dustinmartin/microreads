@@ -4,8 +4,8 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { books, chunks } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AiRecap } from "./ai-recap";
+import { ReadingActions } from "./_components/reading-actions";
 import { verifyChunkToken } from "@/lib/tokens";
 import { cookies } from "next/headers";
 
@@ -64,14 +64,6 @@ export default async function ReadPage({
     notFound();
   }
 
-  // Fetch previous chunk ID
-  const [prevChunk] = await db
-    .select({ id: chunks.id })
-    .from(chunks)
-    .where(
-      and(eq(chunks.bookId, chunk.bookId), eq(chunks.index, chunk.index - 1))
-    );
-
   // Fetch next chunk ID
   const [nextChunk] = await db
     .select({ id: chunks.id })
@@ -91,9 +83,12 @@ export default async function ReadPage({
         <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-sm font-medium text-[#2C2C2C] dark:text-[#E8E4DC]">
+              <Link
+                href={`/book/${book.id}`}
+                className="truncate text-sm font-medium text-[#2C2C2C] hover:underline dark:text-[#E8E4DC]"
+              >
                 {book.title}
-              </h1>
+              </Link>
               {chunk.chapterTitle && (
                 <p className="mt-0.5 truncate text-xs text-[#2C2C2C]/60 dark:text-[#E8E4DC]/50">
                   {chunk.chapterTitle}
@@ -119,37 +114,12 @@ export default async function ReadPage({
           dangerouslySetInnerHTML={{ __html: chunk.contentHtml }}
         />
 
-        {/* Navigation */}
-        <nav
-          className="mx-auto mt-12 flex items-center justify-between border-t border-[#2C2C2C]/10 pt-6 dark:border-[#E8E4DC]/10"
-          style={{ maxWidth: "60ch" }}
-        >
-          {prevChunk ? (
-            <Link
-              href={`/read/${prevChunk.id}`}
-              className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium text-[#2C2C2C]/70 transition-colors hover:bg-[#2C2C2C]/5 hover:text-[#2C2C2C] dark:text-[#E8E4DC]/70 dark:hover:bg-[#E8E4DC]/5 dark:hover:text-[#E8E4DC]"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Link>
-          ) : (
-            <div />
-          )}
-
-          {nextChunk ? (
-            <Link
-              href={`/read/${nextChunk.id}`}
-              className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium text-[#2C2C2C]/70 transition-colors hover:bg-[#2C2C2C]/5 hover:text-[#2C2C2C] dark:text-[#E8E4DC]/70 dark:hover:bg-[#E8E4DC]/5 dark:hover:text-[#E8E4DC]"
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          ) : (
-            <div className="text-sm text-[#2C2C2C]/50 dark:text-[#E8E4DC]/40">
-              End of book
-            </div>
-          )}
-        </nav>
+        {/* Actions */}
+        <ReadingActions
+          chunkId={chunkId}
+          bookId={book.id}
+          nextChunkId={nextChunk?.id ?? null}
+        />
       </main>
 
       {/* Progress bar at very bottom */}

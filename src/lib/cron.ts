@@ -16,7 +16,13 @@ async function getSendTime(): Promise<string> {
     .limit(1)
     .then((rows) => rows[0]);
 
-  return row?.value ?? DEFAULT_CRON;
+  if (!row?.value) return DEFAULT_CRON;
+  try {
+    const parsed = JSON.parse(row.value);
+    return typeof parsed === "string" ? parsed : DEFAULT_CRON;
+  } catch {
+    return row.value;
+  }
 }
 
 export async function startCron(): Promise<ScheduledTask> {

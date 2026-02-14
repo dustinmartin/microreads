@@ -45,14 +45,16 @@ export function countWords(text: string): number {
  * is preserved inside each paragraph.
  */
 function extractParagraphs(html: string): string[] {
-  // Match <p ...>...</p> blocks (case-insensitive, dotall via [\s\S])
-  const pTagRegex = /<p[\s>][\s\S]*?<\/p>/gi;
-  const matches = html.match(pTagRegex);
+  // Match block-level elements: <p>, <div>, <figure>, <table>, <svg> (with closing tags)
+  // and standalone <img> tags (self-closing or void)
+  const blockRegex =
+    /<(?:p|div|figure|table|svg)[\s>][\s\S]*?<\/(?:p|div|figure|table|svg)>|<img\s[^>]*\/?>/gi;
+  const matches = html.match(blockRegex);
 
   if (matches && matches.length > 0) {
     return matches
       .map((m) => m.trim())
-      .filter((m) => countWords(m) > 0);
+      .filter((m) => m.length > 0);
   }
 
   // Fallback: split on double newlines and wrap each block in <p> tags

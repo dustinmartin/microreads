@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { books, chunks } from "@/lib/db/schema";
+import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import {
   BookOpen,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import BookControls from "./_components/book-controls";
 import ChunkSizeControl from "./_components/chunk-size-control";
+import ChunkGrid from "./_components/chunk-grid";
 
 export default async function BookDetailPage({
   params,
@@ -38,6 +39,13 @@ export default async function BookDetailPage({
     .where(eq(chunks.bookId, bookId))
     .orderBy(chunks.index);
 
+  // Fetch reading_log entries for this book to detect skip-ahead reads
+  const logEntries = await db
+    .select({ chunkId: readingLog.chunkId })
+    .from(readingLog)
+    .where(eq(readingLog.bookId, bookId));
+  const readChunkIds = new Set(logEntries.map((e) => e.chunkId));
+
   // Build chapter list grouped by chapterTitle
   const chapterMap = new Map<
     string,
@@ -59,8 +67,10 @@ export default async function BookDetailPage({
   }
 
   const chapters = Array.from(chapterMap.values()).map((chapter) => {
-    const readCount = chapter.chunkIndices.filter(
-      (idx) => idx < book.currentChunkIndex
+    const readCount = chapter.chunkIds.filter(
+      (id, i) =>
+        chapter.chunkIndices[i] < book.currentChunkIndex ||
+        readChunkIds.has(id)
     ).length;
     const totalCount = chapter.chunkIndices.length;
 
@@ -82,7 +92,9 @@ export default async function BookDetailPage({
   // Reading stats
   const chunksRead = book.currentChunkIndex;
   const wordsRead = allChunks
-    .filter((c) => c.index < book.currentChunkIndex)
+    .filter(
+      (c) => c.index < book.currentChunkIndex || readChunkIds.has(c.id)
+    )
     .reduce((sum, c) => sum + c.wordCount, 0);
 
   const addedDate = new Date(book.addedAt);
@@ -265,27 +277,16 @@ export default async function BookDetailPage({
 
                 {/* Chunk links */}
                 <div className="border-t border-[#2C2C2C]/5 px-4 py-2 dark:border-[#E8E4DC]/5">
-                  <div className="flex flex-wrap gap-1.5">
-                    {chapter.chunkIndices.map((idx, i) => {
-                      const isRead = idx < book.currentChunkIndex;
-                      const isCurrent = idx === book.currentChunkIndex;
-                      return (
-                        <Link
-                          key={chapter.chunkIds[i]}
-                          href={`/read/${chapter.chunkIds[i]}`}
-                          className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md px-1.5 text-xs font-medium transition-colors ${
-                            isCurrent
-                              ? "bg-emerald-500 text-white shadow-sm dark:bg-emerald-400 dark:text-[#1A1A1A]"
-                              : isRead
-                                ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
-                                : "bg-[#2C2C2C]/5 text-[#2C2C2C]/50 hover:bg-[#2C2C2C]/10 hover:text-[#2C2C2C]/70 dark:bg-[#E8E4DC]/5 dark:text-[#E8E4DC]/40 dark:hover:bg-[#E8E4DC]/10"
-                          }`}
-                        >
-                          {idx + 1}
-                        </Link>
-                      );
-                    })}
-                  </div>
+                  <ChunkGrid
+                    chunkIds={chapter.chunkIds}
+                    chunkIndices={chapter.chunkIndices}
+                    readChunkIds={chapter.chunkIds.filter(
+                      (id, i) =>
+                        chapter.chunkIndices[i] < book.currentChunkIndex ||
+                        readChunkIds.has(id)
+                    )}
+                    currentChunkIndex={book.currentChunkIndex}
+                  />
                 </div>
               </div>
             ))}

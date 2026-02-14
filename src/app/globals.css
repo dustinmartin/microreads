@@ -214,3 +214,31 @@
 .dark .prose-reader hr {
   border-top-color: #e8e4dc15;
 }
+
+.prose-reader img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 1.25em 0;
+}
+
+.prose-reader figure {
+  margin: 1.5em 0;
+}
+
+.prose-reader figcaption {
+  font-size: 0.875em;
+  color: #2c2c2c99;
+  text-align: center;
+  margin-top: 0.5em;
+}
+
+.dark .prose-reader figcaption {
+  color: #e8e4dc80;
+}
+
+.prose-reader svg {
+  max-width: 100%;
+  height: auto;
+  margin: 1.25em 0;
+}

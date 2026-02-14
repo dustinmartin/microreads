@@ -45,9 +45,9 @@ export async function POST(
 
   let bookCompleted = false;
 
-  // If this chunk is the current chunk, advance the index
-  if (chunk.index === book.currentChunkIndex) {
-    const newIndex = book.currentChunkIndex + 1;
+  // If this chunk is at or ahead of current progress, advance
+  if (chunk.index >= book.currentChunkIndex) {
+    const newIndex = chunk.index + 1;
 
     if (newIndex >= book.totalChunks) {
       // Book is completed

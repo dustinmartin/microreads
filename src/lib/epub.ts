@@ -25,7 +25,8 @@ export async function parseEpub(
   filePath: string,
   bookId: string
 ): Promise<ParsedEpub> {
-  const epub = await EPub.createAsync(filePath);
+  const imageWebRoot = `/api/book-images/${bookId}`;
+  const epub = await EPub.createAsync(filePath, imageWebRoot);
 
   const title = epub.metadata.title ?? "Untitled";
   const author = epub.metadata.creator ?? "Unknown Author";
@@ -33,10 +34,40 @@ export async function parseEpub(
   // Extract and save cover image
   const coverPath = await extractCover(epub, bookId);
 
+  // Extract and save all images from the epub
+  await extractImages(epub, bookId);
+
   // Extract chapters in spine order
   const chapters = await extractChapters(epub);
 
   return { title, author, coverPath, chapters };
+}
+
+/**
+ * Extract all images from the EPUB and save them to data/book-images/{bookId}/.
+ * The epub2 library rewrites img src attributes using the imagewebroot we passed,
+ * so chapter HTML will reference /api/book-images/{bookId}/{href}.
+ */
+async function extractImages(epub: EPub, bookId: string): Promise<void> {
+  const images = epub.listImage();
+  if (!images || images.length === 0) return;
+
+  const baseDir = path.resolve(process.cwd(), "data", "book-images", bookId);
+
+  for (const img of images) {
+    if (!img.id) continue;
+
+    try {
+      const [imageBuffer] = await epub.getImageAsync(img.id);
+      const href = img.href ?? img.id;
+      const outputPath = path.join(baseDir, href);
+
+      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+      fs.writeFileSync(outputPath, imageBuffer);
+    } catch {
+      // Skip images that fail to extract
+    }
+  }
 }
 
 /**
