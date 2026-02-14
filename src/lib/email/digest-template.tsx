@@ -20,7 +20,7 @@ interface BookSection {
   coverUrl: string | null;
   chapterTitle: string;
   progress: number;
-  teaser: string;
+  teaserParagraphs: string[];
   readUrl: string;
 }
 
@@ -92,7 +92,18 @@ export function DigestEmail({
               </table>
 
               {/* Teaser */}
-              <Text style={teaserText}>{book.teaser}</Text>
+              {book.teaserParagraphs.map((paragraph, paragraphIdx) => (
+                <Text
+                  key={`${book.id}-teaser-${paragraphIdx}`}
+                  style={
+                    paragraphIdx === book.teaserParagraphs.length - 1
+                      ? teaserTextLast
+                      : teaserText
+                  }
+                >
+                  {paragraph}
+                </Text>
+              ))}
 
               {/* CTA Button */}
               <Button style={ctaButton} href={book.readUrl}>
@@ -228,6 +239,11 @@ const teaserText: React.CSSProperties = {
   fontSize: "15px",
   lineHeight: "1.65",
   color: "#3D3832",
+  margin: "14px 0 0 0",
+};
+
+const teaserTextLast: React.CSSProperties = {
+  ...teaserText,
   margin: "14px 0 16px 0",
 };
 

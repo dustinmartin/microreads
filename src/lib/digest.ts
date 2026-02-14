@@ -44,10 +44,70 @@ interface DigestResult {
   error?: string;
 }
 
-function generateTeaser(contentText: string): string {
-  const words = contentText.split(/\s+/).filter(Boolean);
-  const teaserWords = words.slice(0, 100);
-  return teaserWords.join(" ") + (words.length > 100 ? "..." : "");
+function decodeBasicEntities(text: string): string {
+  return text
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+}
+
+function stripHtml(html: string): string {
+  return decodeBasicEntities(html.replace(/<[^>]*>/g, " "));
+}
+
+function buildTeaserParagraphs(
+  contentHtml: string,
+  maxWords = 100
+): string[] {
+  const normalized = contentHtml
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(?:p|div|blockquote|h[1-6]|li|ul|ol|section|article)>/gi, "\n\n");
+
+  const rawParagraphs = normalized
+    .split(/\n{2,}/)
+    .map((p) => stripHtml(p).replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  if (rawParagraphs.length === 0) {
+    const fallback = stripHtml(contentHtml).replace(/\s+/g, " ").trim();
+    if (!fallback) return [];
+    const fallbackWords = fallback.split(" ").filter(Boolean);
+    const isTruncated = fallbackWords.length > maxWords;
+    const text = fallbackWords.slice(0, maxWords).join(" ");
+    return [isTruncated ? `${text}...` : text];
+  }
+
+  const teaserParagraphs: string[] = [];
+  let wordsLeft = maxWords;
+  let truncated = false;
+
+  for (const paragraph of rawParagraphs) {
+    if (wordsLeft <= 0) {
+      truncated = true;
+      break;
+    }
+
+    const words = paragraph.split(/\s+/).filter(Boolean);
+    if (words.length <= wordsLeft) {
+      teaserParagraphs.push(words.join(" "));
+      wordsLeft -= words.length;
+      continue;
+    }
+
+    teaserParagraphs.push(words.slice(0, wordsLeft).join(" "));
+    wordsLeft = 0;
+    truncated = true;
+  }
+
+  if (truncated && teaserParagraphs.length > 0) {
+    teaserParagraphs[teaserParagraphs.length - 1] =
+      `${teaserParagraphs[teaserParagraphs.length - 1]}...`;
+  }
+
+  return teaserParagraphs;
 }
 
 function getBaseUrl(): string {
@@ -172,7 +232,7 @@ export async function buildDigestProps(): Promise<{
 
     if (!chunk) continue;
 
-    const teaser = generateTeaser(chunk.contentText);
+    const teaserParagraphs = buildTeaserParagraphs(chunk.contentHtml);
     const progress =
       book.totalChunks > 0
         ? Math.round((book.currentChunkIndex / book.totalChunks) * 100)
@@ -196,7 +256,7 @@ export async function buildDigestProps(): Promise<{
       coverUrl,
       chapterTitle: chunk.chapterTitle || "Untitled Chapter",
       progress,
-      teaser,
+      teaserParagraphs,
       readUrl: `${baseUrl}/read/${chunk.id}?token=${token}`,
     });
 
