@@ -49,13 +49,13 @@
 **Test:** Feed chapters of known word counts; verify chunk count, no mid-paragraph splits, word counts within expected range.
 
 ### 1.5 Book Upload Pipeline (Backend)
-- [ ] Create `POST /api/books` route accepting multipart epub upload
-- [ ] Save uploaded epub to `data/epubs/[bookId].epub`
-- [ ] Call `parseEpub` to extract metadata and cover
-- [ ] Call `chunkBook` to generate chunks
-- [ ] Insert `books` row with metadata and computed `total_chunks`
-- [ ] Batch-insert all `chunks` rows with sequential indices
-- [ ] Return created book object with id, title, author, total_chunks
+- [x] Create `POST /api/books` route accepting multipart epub upload
+- [x] Save uploaded epub to `data/epubs/[bookId].epub`
+- [x] Call `parseEpub` to extract metadata and cover
+- [x] Call `chunkBook` to generate chunks
+- [x] Insert `books` row with metadata and computed `total_chunks`
+- [x] Batch-insert all `chunks` rows with sequential indices
+- [x] Return created book object with id, title, author, total_chunks
 
 **Test:** POST an epub file; verify book row exists in DB, chunks are sequential, cover file saved.
 
@@ -71,10 +71,10 @@
 **Test:** Seed DB with books in various statuses; verify response shape and sort order.
 
 ### 2.2 Library Page — UI
-- [ ] Create `/` page with book cards (cover, title, author, progress bar, status badge)
-- [ ] Group into Active, Queued, Completed sections
-- [ ] "Upload Book" button linking to `/upload`
-- [ ] Completed section collapsed by default
+- [x] Create `/` page with book cards (cover, title, author, progress bar, status badge)
+- [x] Group into Active, Queued, Completed sections
+- [x] "Upload Book" button linking to `/upload`
+- [x] Completed section collapsed by default
 
 **Test:** Renders seeded books in correct sections; progress bars reflect DB state.
 
@@ -90,9 +90,9 @@
 **Test:** Upload an epub; see metadata preview; adjust slider; confirm and verify book appears in library.
 
 ### 2.4 Reading View — API
-- [ ] Create `GET /api/chunks/[id]` returning chunk with book context
-- [ ] Include: content_html, chapter_title, index, total_chunks, book title, ai_recap
-- [ ] Include prev/next chunk IDs for navigation
+- [x] Create `GET /api/chunks/[id]` returning chunk with book context
+- [x] Include: content_html, chapter_title, index, total_chunks, book title, ai_recap
+- [x] Include prev/next chunk IDs for navigation
 
 **Test:** Request a mid-book chunk; verify prev/next IDs, correct content, book metadata present.
 
@@ -122,11 +122,11 @@
 ## Phase 3: Email Digest
 
 ### 3.1 Email Template
-- [ ] Install React Email + Nodemailer
-- [ ] Create digest email component matching spec layout
-- [ ] Per-book section: cover, title, author, progress, teaser (~100 words plain text)
-- [ ] "Continue Reading" link pointing to `/read/[chunkId]`
-- [ ] Footer with streak count and quick action links
+- [x] Install React Email + Nodemailer
+- [x] Create digest email component matching spec layout
+- [x] Per-book section: cover, title, author, progress, teaser (~100 words plain text)
+- [x] "Continue Reading" link pointing to `/read/[chunkId]`
+- [x] Footer with streak count and quick action links
 - [ ] Test rendering with `react-email preview`
 
 **Test:** Render email with mock data; verify HTML output is valid and links are correct.
