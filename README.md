@@ -50,6 +50,8 @@ SMTP_PORT=587
 SMTP_USER=you@example.com
 SMTP_PASS=app-password
 EMAIL_TO=you@example.com
+# Optional for digest links:
+APP_BASE_URL=https://your-hostname.ts.net
 SEND_TIME=30 6 * * *
 ```
 
