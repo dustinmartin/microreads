@@ -151,10 +151,10 @@
 **Test:** Trigger send; trigger again same day; verify no double-advance. Preview returns valid HTML.
 
 ### 3.4 Cron Scheduling
-- [ ] Install `node-cron`
-- [ ] On app startup, read `send_time` from settings and schedule `sendDailyDigest()`
-- [ ] Reschedule if setting is updated
-- [ ] Log send attempts and results
+- [x] Install `node-cron`
+- [x] On app startup, read `send_time` from settings and schedule `sendDailyDigest()`
+- [x] Reschedule if setting is updated
+- [x] Log send attempts and results
 
 **Test:** Set cron to 1 minute from now; verify digest fires and log entry created.
 
@@ -163,11 +163,11 @@
 ## Phase 4: Auth
 
 ### 4.1 Password Login
-- [ ] Create login page at `/login`
-- [ ] Validate password against hashed `AUTH_SECRET` env var
-- [ ] Set HTTP-only session cookie on success
-- [ ] Create auth middleware protecting all routes except `/login` and `/read/[chunkId]` (token auth)
-- [ ] Redirect unauthenticated requests to `/login`
+- [x] Create login page at `/login`
+- [x] Validate password against hashed `AUTH_SECRET` env var
+- [x] Set HTTP-only session cookie on success
+- [x] Create auth middleware protecting all routes except `/login` and `/read/[chunkId]` (token auth)
+- [x] Redirect unauthenticated requests to `/login`
 
 **Test:** Access library without cookie — redirected. Login with correct password — cookie set, access granted.
 
@@ -191,10 +191,10 @@
 ## Phase 5: Book Management
 
 ### 5.1 Book Detail Page
-- [ ] Create `GET /api/books/[id]` returning full book detail with chapter list
-- [ ] Include per-chapter read/unread status, reading stats (chunks read, words read, days active)
-- [ ] Compute estimated completion date based on current daily cadence
-- [ ] Create `/book/[bookId]` page with cover, metadata, chapter list, stats, completion estimate
+- [x] Create `GET /api/books/[id]` returning full book detail with chapter list
+- [x] Include per-chapter read/unread status, reading stats (chunks read, words read, days active)
+- [x] Compute estimated completion date based on current daily cadence
+- [x] Create `/book/[bookId]` page with cover, metadata, chapter list, stats, completion estimate
 
 **Test:** View a partially-read book; verify chapter read indicators match reading_log data.
 
@@ -227,17 +227,17 @@
 ## Phase 6: Stats & Settings
 
 ### 6.1 Stats API
-- [ ] `GET /api/stats` — total books completed, total words read, current streak, longest streak
-- [ ] `GET /api/stats/calendar` — reading days as `{ date: string, count: number }[]` for heatmap
-- [ ] Streak calculation: consecutive days with at least one `read_at` in reading_log
+- [x] `GET /api/stats` — total books completed, total words read, current streak, longest streak
+- [x] `GET /api/stats/calendar` — reading days as `{ date: string, count: number }[]` for heatmap
+- [x] Streak calculation: consecutive days with at least one `read_at` in reading_log
 
 **Test:** Seed reading_log with known dates; verify streak counts and calendar data.
 
 ### 6.2 Stats Page
-- [ ] Create `/stats` page
-- [ ] Total stats cards (books completed, words read, streaks)
-- [ ] Reading calendar heatmap (GitHub-style)
-- [ ] Words-per-day pace chart (line chart)
+- [x] Create `/stats` page
+- [x] Total stats cards (books completed, words read, streaks)
+- [x] Reading calendar heatmap (GitHub-style)
+- [x] Words-per-day pace chart (bar chart)
 - [ ] Books timeline (horizontal bars showing start/finish dates)
 
 **Test:** Page renders with seeded data; charts display correct values.
