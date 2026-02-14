@@ -67,6 +67,15 @@ npm run build
 npm run start
 ```
 
+## Testing
+
+```bash
+npm run test:e2e            # Run Playwright E2E tests
+npm run test:e2e:ui         # Run tests with interactive UI
+npm run test:e2e:headed     # Run tests in headed browser mode
+npx playwright install      # Install browsers (first time only)
+```
+
 ## How It Works
 
 1. Upload an epub at `/upload` and pick a chunk size
