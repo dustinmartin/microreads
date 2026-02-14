@@ -69,6 +69,33 @@ npm run build
 npm run start
 ```
 
+### Run On A PC (Docker, Auto-Restart)
+
+Use Docker Compose so the app restarts automatically after reboot/crash.
+
+```bash
+docker compose up -d --build
+docker compose logs -f microreads
+```
+
+Stop/restart:
+
+```bash
+docker compose stop
+docker compose start
+```
+
+The compose setup mounts `./data` and `./covers` for persistent storage and uses `restart: unless-stopped`.
+
+Set `APP_BASE_URL` in `.env` to your tailnet HTTPS URL on that PC (for example `https://your-pc-name.ts.net`) so email links resolve correctly.
+
+If you want tailnet-only HTTPS access, run on that machine:
+
+```bash
+tailscale serve --bg 3000
+tailscale serve status
+```
+
 ## Testing
 
 ```bash
