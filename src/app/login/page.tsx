@@ -37,14 +37,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FAFAF7] dark:bg-[#1A1A1A] px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         {/* Branding */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="font-serif text-4xl font-bold tracking-tight text-foreground">
             Micro Reads
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 font-serif text-sm italic text-muted-foreground">
             Sign in to your reading library
           </p>
         </div>

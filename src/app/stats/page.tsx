@@ -275,7 +275,7 @@ export default async function StatsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] dark:bg-[#1A1A1A]">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -287,7 +287,7 @@ export default async function StatsPage() {
             Home
           </Link>
         </div>
-        <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="mt-4 font-serif text-2xl font-bold tracking-tight text-foreground">
           Reading Stats
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -306,7 +306,7 @@ export default async function StatsPage() {
                   <card.icon className={`h-5 w-5 ${card.color}`} />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
+                  <p className="font-serif text-xs font-medium text-muted-foreground">
                     {card.label}
                   </p>
                   <p className="text-xl font-bold text-foreground">
@@ -320,7 +320,7 @@ export default async function StatsPage() {
 
         {/* Reading calendar heatmap */}
         <div className="mt-10">
-          <h2 className="text-lg font-semibold text-foreground">
+          <h2 className="font-serif text-lg font-semibold text-foreground">
             Reading Calendar
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -399,7 +399,7 @@ export default async function StatsPage() {
 
         {/* Words per day bar chart */}
         <div className="mt-10">
-          <h2 className="text-lg font-semibold text-foreground">
+          <h2 className="font-serif text-lg font-semibold text-foreground">
             Words Per Day
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">

@@ -128,7 +128,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAF7] dark:bg-[#1A1A1A]">
+      <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
           <div className="flex items-center gap-4">
             <Link
@@ -151,7 +151,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] dark:bg-[#1A1A1A]">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -163,7 +163,7 @@ export default function SettingsPage() {
             Home
           </Link>
         </div>
-        <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="mt-4 font-serif text-2xl font-bold tracking-tight text-foreground">
           Settings
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -186,7 +186,7 @@ export default function SettingsPage() {
         {/* Email Settings */}
         <div className="mt-8 space-y-8">
           <section className="rounded-xl border border-border bg-card p-6">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="font-serif text-lg font-semibold text-foreground">
               Email Delivery
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -251,7 +251,7 @@ export default function SettingsPage() {
 
           {/* AI Settings */}
           <section className="rounded-xl border border-border bg-card p-6">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="font-serif text-lg font-semibold text-foreground">
               AI Configuration
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -309,7 +309,7 @@ export default function SettingsPage() {
 
           {/* Actions */}
           <section className="rounded-xl border border-border bg-card p-6">
-            <h2 className="text-lg font-semibold text-foreground">Actions</h2>
+            <h2 className="font-serif text-lg font-semibold text-foreground">Actions</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Manually trigger digest delivery
             </p>

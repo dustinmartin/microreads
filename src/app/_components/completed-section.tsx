@@ -10,7 +10,7 @@ export function CompletedSection({ children }: { children: React.ReactNode }) {
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-lg font-semibold text-foreground/80 hover:text-foreground transition-colors"
+        className="flex items-center gap-2 font-serif text-lg font-semibold text-foreground/80 hover:text-foreground transition-colors"
       >
         <ChevronRight
           className={`h-5 w-5 transition-transform ${open ? "rotate-90" : ""}`}

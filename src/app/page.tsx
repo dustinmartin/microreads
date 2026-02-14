@@ -58,7 +58,7 @@ function BookCard({ book }: { book: Book }) {
       {/* Book info */}
       <div className="flex min-w-0 flex-1 flex-col justify-between">
         <div>
-          <h3 className="truncate text-sm font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">
+          <h3 className="truncate font-serif text-sm font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">
             {book.title}
           </h3>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -126,12 +126,12 @@ export default async function Home() {
   const hasBooks = allBooks.length > 0;
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] dark:bg-[#1A1A1A]">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
               Micro Reads
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -157,7 +157,7 @@ export default async function Home() {
             {/* Active section */}
             {activeBooks.length > 0 && (
               <section>
-                <h2 className="mb-4 text-lg font-semibold text-foreground">
+                <h2 className="mb-4 font-serif text-lg font-semibold text-foreground">
                   Active
                 </h2>
                 <BookGrid bookList={activeBooks} />
@@ -167,7 +167,7 @@ export default async function Home() {
             {/* Queued section */}
             {queuedBooks.length > 0 && (
               <section>
-                <h2 className="mb-4 text-lg font-semibold text-foreground">
+                <h2 className="mb-4 font-serif text-lg font-semibold text-foreground">
                   Queued
                 </h2>
                 <BookGrid bookList={queuedBooks} />

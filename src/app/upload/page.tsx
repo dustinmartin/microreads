@@ -113,11 +113,11 @@ export default function UploadPage() {
   // Success state
   if (result) {
     return (
-      <div className="min-h-screen bg-[#FAFAF7] dark:bg-[#1A1A1A]">
+      <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
           <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-card p-12 text-center">
             <CheckCircle className="h-12 w-12 text-emerald-500" />
-            <h2 className="mt-4 text-xl font-semibold text-foreground">
+            <h2 className="mt-4 font-serif text-xl font-semibold text-foreground">
               Book uploaded successfully!
             </h2>
             <div className="mt-4 space-y-1 text-sm text-muted-foreground">
@@ -135,7 +135,7 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] dark:bg-[#1A1A1A]">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -146,7 +146,7 @@ export default function UploadPage() {
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
               Upload Book
             </h1>
             <p className="mt-0.5 text-sm text-muted-foreground">

@@ -130,7 +130,7 @@ export default async function BookDetailPage({
   );
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] dark:bg-[#1A1A1A]">
+    <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         {/* Back link */}
         <Link
@@ -161,7 +161,7 @@ export default async function BookDetailPage({
           {/* Metadata */}
           <div className="flex flex-1 flex-col justify-between py-1">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-[#2C2C2C] dark:text-[#E8E4DC]">
+              <h1 className="font-serif text-3xl font-bold tracking-tight text-[#2C2C2C] dark:text-[#E8E4DC]">
                 {book.title}
               </h1>
               <p className="mt-1 text-base text-[#2C2C2C]/60 dark:text-[#E8E4DC]/50">
@@ -235,7 +235,7 @@ export default async function BookDetailPage({
 
         {/* Chapter list */}
         <section className="mt-10">
-          <h2 className="text-lg font-semibold text-[#2C2C2C] dark:text-[#E8E4DC]">
+          <h2 className="font-serif text-lg font-semibold text-[#2C2C2C] dark:text-[#E8E4DC]">
             Chapters
           </h2>
           <div className="mt-4 space-y-2">
@@ -308,10 +308,10 @@ function StatCard({
   return (
     <div className="rounded-xl border border-[#2C2C2C]/8 bg-white/60 p-4 dark:border-[#E8E4DC]/8 dark:bg-white/[0.02]">
       <div className="text-[#2C2C2C]/30 dark:text-[#E8E4DC]/30">{icon}</div>
-      <p className="mt-2 text-lg font-semibold text-[#2C2C2C] dark:text-[#E8E4DC]">
+      <p className="mt-2 text-lg font-semibold tabular-nums text-[#2C2C2C] dark:text-[#E8E4DC]">
         {value}
       </p>
-      <p className="text-xs text-[#2C2C2C]/50 dark:text-[#E8E4DC]/40">
+      <p className="font-serif text-xs text-[#2C2C2C]/50 dark:text-[#E8E4DC]/40">
         {label}
       </p>
     </div>
