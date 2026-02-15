@@ -1,8 +1,6 @@
 # Micro Reads
 
-A personal daily reading app that delivers bite-sized chunks from your epub library to your inbox each morning, backed by a polished web app for reading, tracking, and stats.
-
-**Design philosophy:** This is a morning coffee ritual, not another infinite scroll. The constraint of one chunk per book per day is the feature. The daily email is a newspaper, not a notification.
+A personal daily reading app that delivers bite-sized chunks from your epub library to your inbox each morning.
 
 ![Screenshot 1](docs/Screenshot%201.png)
 ![Screenshot 2](docs/Screenshot%202.png)
@@ -14,8 +12,6 @@ A personal daily reading app that delivers bite-sized chunks from your epub libr
 - **Premium reading view** — Beautifully typeset with serif fonts, warm colors, dark mode, and zero clutter
 - **Progress tracking** — Library view with progress bars, book detail pages with chapter lists, and reading stats
 - **Stats dashboard** — GitHub-style reading heatmap, streaks, words-per-day chart
-- **AI recaps** — Optional "Previously..." summaries via local Ollama so you can context-switch between books
-- **iOS Shortcuts support** — Trigger your daily digest from a Shortcut via the API
 
 ## Tech Stack
 
@@ -123,7 +119,6 @@ All settings are manageable at `/settings`:
 
 - **Email address** — Where to send the daily digest
 - **Send time** — When to deliver (cron expression, default 6:30 AM)
-- **Ollama** — Endpoint and model for AI recaps (optional)
 
 The `/api/trigger` endpoint accepts a Bearer token (your `AUTH_SECRET`) for triggering digests from iOS Shortcuts or other automations.
 
