@@ -4,6 +4,9 @@ A personal daily reading app that delivers bite-sized chunks from your epub libr
 
 **Design philosophy:** This is a morning coffee ritual, not another infinite scroll. The constraint of one chunk per book per day is the feature. The daily email is a newspaper, not a notification.
 
+![Screenshot 1](docs/Screenshot%201.png)
+![Screenshot 2](docs/Screenshot%202.png)
+
 ## Features
 
 - **Epub upload & chunking** — Upload epubs, configure chunk size (300-3000 words), and the app splits them into daily-sized readings that respect paragraph and chapter boundaries
