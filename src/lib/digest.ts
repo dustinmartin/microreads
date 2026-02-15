@@ -16,6 +16,147 @@ interface MailAttachment {
   contentType: string;
 }
 
+const INLINE_CHUNK_IMAGE_CAP = 6;
+
+const imageMimeTypes: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml",
+};
+
+interface InlineImageState {
+  attachments: MailAttachment[];
+  attachmentsByPath: Map<string, MailAttachment>;
+  localImageCount: number;
+  embeddedCount: number;
+  skippedCount: number;
+}
+
+function createInlineImageState(): InlineImageState {
+  return {
+    attachments: [],
+    attachmentsByPath: new Map<string, MailAttachment>(),
+    localImageCount: 0,
+    embeddedCount: 0,
+    skippedCount: 0,
+  };
+}
+
+function isPathWithinDir(baseDir: string, candidatePath: string): boolean {
+  const relative = path.relative(baseDir, candidatePath);
+  return !relative.startsWith("..") && !path.isAbsolute(relative);
+}
+
+function sanitizeImgSrc(src: string): string {
+  let value = src.trim();
+
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      value = new URL(value).pathname;
+    } catch {
+      return "";
+    }
+  } else {
+    const queryIndex = value.indexOf("?");
+    if (queryIndex >= 0) value = value.slice(0, queryIndex);
+    const hashIndex = value.indexOf("#");
+    if (hashIndex >= 0) value = value.slice(0, hashIndex);
+  }
+
+  return value;
+}
+
+function resolveLocalBookImagePath(src: string, bookId: string): string | null {
+  const pathname = sanitizeImgSrc(src);
+  if (!pathname) return null;
+
+  const prefix = `/api/book-images/${bookId}/`;
+  if (!pathname.startsWith(prefix)) return null;
+
+  let relativePath = pathname.slice(prefix.length).replace(/^\/+/, "");
+  if (!relativePath) return null;
+
+  try {
+    relativePath = decodeURIComponent(relativePath);
+  } catch {
+    // Keep original relative path if decoding fails.
+  }
+
+  return relativePath;
+}
+
+function buildInlineChunkAttachment(
+  absolutePath: string,
+  bookId: string,
+  state: InlineImageState
+): MailAttachment | null {
+  const existing = state.attachmentsByPath.get(absolutePath);
+  if (existing) return existing;
+
+  if (state.embeddedCount >= INLINE_CHUNK_IMAGE_CAP) {
+    state.skippedCount += 1;
+    return null;
+  }
+
+  const ext = path.extname(absolutePath).toLowerCase();
+  const suffix = ext || ".img";
+  const ordinal = state.embeddedCount + 1;
+
+  const attachment: MailAttachment = {
+    filename: `chunk-${bookId}-${ordinal}${suffix}`,
+    path: absolutePath,
+    cid: `chunk-${bookId}-${ordinal}`,
+    contentType: imageMimeTypes[ext] ?? "application/octet-stream",
+  };
+
+  state.attachmentsByPath.set(absolutePath, attachment);
+  state.attachments.push(attachment);
+  state.embeddedCount += 1;
+  return attachment;
+}
+
+function rewriteChunkHtmlWithInlineCids(
+  chunkHtml: string,
+  bookId: string,
+  state: InlineImageState
+): string {
+  const baseDir = path.resolve(process.cwd(), "data", "book-images", bookId);
+  const imgTagRegex = /<img\b[^>]*>/gi;
+  const srcAttrRegex = /\bsrc\s*=\s*(["'])(.*?)\1/i;
+
+  return chunkHtml.replace(imgTagRegex, (tag) => {
+    const srcMatch = tag.match(srcAttrRegex);
+    if (!srcMatch) return tag;
+
+    const quote = srcMatch[1];
+    const src = srcMatch[2];
+    const relativePath = resolveLocalBookImagePath(src, bookId);
+    if (!relativePath) return tag;
+
+    state.localImageCount += 1;
+
+    const absolutePath = path.resolve(baseDir, relativePath);
+    if (!isPathWithinDir(baseDir, absolutePath)) {
+      state.skippedCount += 1;
+      return tag;
+    }
+
+    if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isFile()) {
+      state.skippedCount += 1;
+      return tag;
+    }
+
+    const attachment = buildInlineChunkAttachment(absolutePath, bookId, state);
+    if (!attachment) return tag;
+
+    const cidSrc = `cid:${attachment.cid}`;
+    return tag.replace(srcAttrRegex, `src=${quote}${cidSrc}${quote}`);
+  });
+}
+
 function buildCoverAttachment(
   coverImage: string,
   bookId: string
@@ -23,18 +164,11 @@ function buildCoverAttachment(
   const filePath = path.join(process.cwd(), coverImage);
   if (!fs.existsSync(filePath)) return null;
   const ext = path.extname(filePath).toLowerCase();
-  const mimeTypes: Record<string, string> = {
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".png": "image/png",
-    ".gif": "image/gif",
-    ".webp": "image/webp",
-  };
   return {
     filename: `cover-${bookId}${ext}`,
     path: filePath,
     cid: `cover-${bookId}`,
-    contentType: mimeTypes[ext] ?? "image/jpeg",
+    contentType: imageMimeTypes[ext] ?? "image/jpeg",
   };
 }
 
@@ -133,7 +267,7 @@ export async function buildDigestProps(): Promise<{
   attachments: MailAttachment[];
 } | null> {
   const baseUrl = getBaseUrl();
-  const today = todayDateString();
+  const inlineImageState = createInlineImageState();
 
   // Query all active books
   const activeBooks = await db
@@ -186,6 +320,11 @@ export async function buildDigestProps(): Promise<{
     }
 
     const token = generateChunkToken(chunk.id);
+    const chunkHtml = rewriteChunkHtmlWithInlineCids(
+      chunk.contentHtml,
+      book.id,
+      inlineImageState
+    );
 
     bookSections.push({
       id: book.id,
@@ -194,7 +333,7 @@ export async function buildDigestProps(): Promise<{
       coverUrl,
       chapterTitle: chunk.chapterTitle || "Untitled Chapter",
       progress,
-      chunkHtml: chunk.contentHtml,
+      chunkHtml,
       readUrl: `${baseUrl}/read/${chunk.id}?token=${token}`,
     });
 
@@ -212,6 +351,16 @@ export async function buildDigestProps(): Promise<{
 
   if (bookSections.length === 0) {
     return null;
+  }
+
+  attachments.push(...inlineImageState.attachments);
+  if (inlineImageState.localImageCount > 0) {
+    console.info(
+      "Digest inline images:",
+      `found=${inlineImageState.localImageCount}`,
+      `embedded=${inlineImageState.embeddedCount}`,
+      `skipped=${inlineImageState.skippedCount}`
+    );
   }
 
   const totalReadingMinutes = Math.max(1, Math.round(totalWordCount / 250));
