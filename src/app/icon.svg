@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="cover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6D5A3A"/>
+      <stop offset="100%" stop-color="#4A3928"/>
+    </linearGradient>
+    <linearGradient id="pages" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FAF8F2"/>
+      <stop offset="100%" stop-color="#E8E4DC"/>
+    </linearGradient>
+  </defs>
+  <!-- Back cover shadow -->
+  <rect x="5" y="3" width="20" height="26" rx="2" fill="#3A2E1E"/>
+  <!-- Pages -->
+  <rect x="7" y="4" width="17" height="24" rx="1" fill="url(#pages)"/>
+  <!-- Page lines (text) -->
+  <line x1="10" y1="10" x2="21" y2="10" stroke="#C4BFB3" stroke-width="1" stroke-linecap="round"/>
+  <line x1="10" y1="13" x2="21" y2="13" stroke="#C4BFB3" stroke-width="1" stroke-linecap="round"/>
+  <line x1="10" y1="16" x2="18" y2="16" stroke="#C4BFB3" stroke-width="1" stroke-linecap="round"/>
+  <line x1="10" y1="19" x2="21" y2="19" stroke="#C4BFB3" stroke-width="1" stroke-linecap="round"/>
+  <line x1="10" y1="22" x2="15" y2="22" stroke="#C4BFB3" stroke-width="1" stroke-linecap="round"/>
+  <!-- Front cover -->
+  <rect x="4" y="3" width="4" height="26" rx="2" fill="url(#cover)"/>
+  <!-- Spine highlight -->
+  <rect x="6" y="3" width="1.5" height="26" fill="#7D6A48" opacity="0.4" rx="0.5"/>
+  <!-- Bookmark ribbon -->
+  <polygon points="19,3 22,3 22,11 20.5,9 19,11" fill="#C0392B"/>
+</svg>
