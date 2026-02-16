@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
 import { BookOpen, Plus } from "lucide-react";
 import { CompletedSection } from "./_components/completed-section";
+import logo from "./icon.svg";
 
 type Book = typeof books.$inferSelect;
 
@@ -131,7 +133,8 @@ export default async function Home() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
+            <h1 className="flex items-center gap-2 font-serif text-2xl font-bold tracking-tight text-foreground">
+              <Image src={logo} alt="" width={28} height={28} />
               Micro Reads
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
