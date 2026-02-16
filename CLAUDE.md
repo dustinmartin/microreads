@@ -46,21 +46,22 @@ Epub upload → parse metadata/chapters → chunk by word count → store in SQL
 ### Database Tables
 
 Four tables: `books`, `chunks`, `reading_log`, `settings`. See `docs/spec.md` for full schema. Key relationships:
+
 - `chunks.book_id` → `books.id`
 - `reading_log.chunk_id` → `chunks.id`, `reading_log.book_id` → `books.id`
 - `settings` is a simple key/value store
 
 ### Pages
 
-| Route | Purpose |
-|-------|---------|
-| `/` | Library — bookshelf with active/queued/completed sections |
-| `/upload` | Epub upload with metadata preview and chunk size config |
+| Route             | Purpose                                                          |
+| ----------------- | ---------------------------------------------------------------- |
+| `/`               | Library — bookshelf with active/queued/completed sections        |
+| `/upload`         | Epub upload with metadata preview and chunk size config          |
 | `/read/[chunkId]` | Core reading view — premium typography, navigation, mark-as-read |
-| `/book/[bookId]` | Book detail — chapters, stats, controls |
-| `/stats` | Reading stats, calendar heatmap, pace charts |
-| `/settings` | Email, schedule, Ollama config |
-| `/login` | Single-user password auth |
+| `/book/[bookId]`  | Book detail — chapters, stats, controls                          |
+| `/stats`          | Reading stats, calendar heatmap, pace charts                     |
+| `/settings`       | Email, schedule, Ollama config                                   |
+| `/login`          | Single-user password auth                                        |
 
 ### Auth Model
 

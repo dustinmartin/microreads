@@ -15,14 +15,14 @@ A personal daily reading app that delivers bite-sized chunks from your epub libr
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js (App Router) |
-| Database | SQLite via Drizzle ORM |
-| Styling | Tailwind CSS + shadcn/ui |
-| Email | React Email + Nodemailer (SMTP) |
-| AI Recaps | Ollama (local, optional) |
-| Scheduling | node-cron |
+| Layer      | Technology                      |
+| ---------- | ------------------------------- |
+| Framework  | Next.js (App Router)            |
+| Database   | SQLite via Drizzle ORM          |
+| Styling    | Tailwind CSS + shadcn/ui        |
+| Email      | React Email + Nodemailer (SMTP) |
+| AI Recaps  | Ollama (local, optional)        |
+| Scheduling | node-cron                       |
 
 ## Getting Started
 
