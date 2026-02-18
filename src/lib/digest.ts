@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { db } from "@/lib/db";
-import { books, chunks, readingLog } from "@/lib/db/schema";
+import { books, chunks, readingLog, settings } from "@/lib/db/schema";
 import { eq, and, desc, asc, sql } from "drizzle-orm";
 import { sendEmail } from "@/lib/email/send";
 import { DigestEmail } from "@/lib/email/digest-template";
@@ -382,13 +382,36 @@ export async function buildDigestProps(): Promise<{
 }
 
 /**
+ * Get the recipient email from the settings table, falling back to EMAIL_TO env var.
+ */
+export async function getEmailTo(): Promise<string | undefined> {
+  const row = await db
+    .select()
+    .from(settings)
+    .where(eq(settings.key, "email_to"))
+    .limit(1)
+    .then((rows) => rows[0]);
+
+  if (row?.value) {
+    try {
+      const parsed = JSON.parse(row.value);
+      if (typeof parsed === "string" && parsed) return parsed;
+    } catch {
+      if (row.value) return row.value;
+    }
+  }
+
+  return process.env.EMAIL_TO;
+}
+
+/**
  * Send the daily digest email.
  */
 export async function sendDailyDigest(): Promise<DigestResult> {
   try {
-    const emailTo = process.env.EMAIL_TO;
+    const emailTo = await getEmailTo();
     if (!emailTo) {
-      return { sent: false, bookCount: 0, error: "EMAIL_TO env var not set" };
+      return { sent: false, bookCount: 0, error: "No recipient email configured" };
     }
 
     const result = await buildDigestProps();

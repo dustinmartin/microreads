@@ -1,10 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
 import { BookOpen, Plus } from "lucide-react";
 import { CompletedSection } from "./_components/completed-section";
-import logo from "./icon.svg";
 
 type Book = typeof books.$inferSelect;
 
@@ -132,16 +130,7 @@ export default async function Home() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="flex items-center gap-2 font-serif text-2xl font-bold tracking-tight text-foreground">
-              <Image src={logo} alt="" width={28} height={28} />
-              Micro Reads
-            </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Your daily reading library
-            </p>
-          </div>
+        <div className="flex items-center justify-end">
           <Link
             href="/upload"
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"

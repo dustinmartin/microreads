@@ -3,6 +3,7 @@ import {
   sendDailyDigest,
   alreadySentToday,
   buildDigestProps,
+  getEmailTo,
 } from "@/lib/digest";
 import { sendEmail } from "@/lib/email/send";
 import { DigestEmail } from "@/lib/email/digest-template";
@@ -14,10 +15,10 @@ export async function POST() {
 
     if (wasSentToday) {
       // Idempotent: re-send the same email without advancing
-      const emailTo = process.env.EMAIL_TO;
+      const emailTo = await getEmailTo();
       if (!emailTo) {
         return NextResponse.json(
-          { sent: false, bookCount: 0, error: "EMAIL_TO env var not set" },
+          { sent: false, bookCount: 0, error: "No recipient email configured" },
           { status: 500 }
         );
       }
