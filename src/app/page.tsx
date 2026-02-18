@@ -130,7 +130,15 @@ export default async function Home() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         {/* Header */}
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
+              Library
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Your reading collection
+            </p>
+          </div>
           <Link
             href="/upload"
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
