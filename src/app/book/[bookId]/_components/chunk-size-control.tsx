@@ -42,7 +42,7 @@ export default function ChunkSizeControl({
       {!open ? (
         <button
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-1 rounded-lg bg-[#2C2C2C]/5 px-2.5 py-1 text-xs font-medium text-[#2C2C2C]/70 transition-colors hover:bg-[#2C2C2C]/10 dark:bg-[#E8E4DC]/5 dark:text-[#E8E4DC]/60 dark:hover:bg-[#E8E4DC]/10"
+          className="inline-flex items-center gap-1 rounded-lg bg-[#2C2C2C]/5 px-3 py-2 text-xs font-medium min-h-[44px] text-[#2C2C2C]/70 transition-colors hover:bg-[#2C2C2C]/10 dark:bg-[#E8E4DC]/5 dark:text-[#E8E4DC]/60 dark:hover:bg-[#E8E4DC]/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <Settings2 className="h-3.5 w-3.5" />
           Adjust
@@ -51,6 +51,7 @@ export default function ChunkSizeControl({
         <div className="flex items-center gap-3">
           <input
             type="range"
+            inputMode="numeric"
             min={300}
             max={3000}
             step={50}
@@ -64,7 +65,7 @@ export default function ChunkSizeControl({
           <button
             onClick={applyChunkSize}
             disabled={loading || size === currentSize}
-            className="rounded-lg bg-emerald-500 px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-emerald-600 disabled:opacity-50 dark:bg-emerald-400 dark:text-[#1A1A1A] dark:hover:bg-emerald-300"
+            className="rounded-lg bg-emerald-500 px-3 py-2 text-xs font-medium min-h-[44px] text-white transition-colors hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-emerald-400 dark:text-[#1A1A1A] dark:hover:bg-emerald-300 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             {loading ? "Applying..." : "Apply"}
           </button>
@@ -73,7 +74,7 @@ export default function ChunkSizeControl({
               setSize(currentSize);
               setOpen(false);
             }}
-            className="rounded-lg px-2 py-1 text-xs text-[#2C2C2C]/50 hover:text-[#2C2C2C]/80 dark:text-[#E8E4DC]/40 dark:hover:text-[#E8E4DC]/70"
+            className="rounded-lg px-3 py-2 text-xs min-h-[44px] text-[#2C2C2C]/50 hover:text-[#2C2C2C]/80 dark:text-[#E8E4DC]/40 dark:hover:text-[#E8E4DC]/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Cancel
           </button>

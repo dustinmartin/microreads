@@ -190,6 +190,161 @@ The warm off-white `#FAFAF7` background is excellent — gives a paper-like qual
 
 ---
 
+## Mobile Deep Dive (iPhone & Android)
+
+A code-level audit of mobile-specific concerns beyond general responsiveness. This section covers device-specific behaviors, touch interaction, and native-feel optimizations.
+
+### PWA & Home Screen Support
+
+**Severity: Critical**
+
+The app has no Progressive Web App support. For a daily reading app, this is a significant gap — users should be able to add it to their home screen for a native-like experience.
+
+**Missing in `src/app/layout.tsx`:**
+- No `<link rel="manifest">` to a web app manifest
+- No `<meta name="apple-mobile-web-app-capable">` tag
+- No `<meta name="apple-mobile-web-app-status-bar-style">` tag
+- No `<meta name="theme-color">` tag (should be `#FAFAF7` light / `#1A1A1A` dark)
+
+**Missing entirely:**
+- No `public/manifest.json` with `display: "standalone"`, app name, icons, or theme colors
+- No Apple touch icons (`apple-touch-icon`)
+
+**Recommendation:** Add a `manifest.json` with `"display": "standalone"` and `"background_color": "#FAFAF7"`. Add the corresponding meta tags to the root layout. This is a small effort change that transforms the daily reading experience from a browser tab into a native-feeling app.
+
+### Safe Area Insets (Notch / Dynamic Island / Home Indicator)
+
+**Severity: Critical**
+
+No safe area handling exists anywhere in the codebase.
+
+**Issues:**
+- The viewport meta tag in `src/app/layout.tsx` does not include `viewport-fit=cover`, which is required for safe area insets to work
+- No usage of `env(safe-area-inset-*)` in any CSS or Tailwind classes
+- The **fixed bottom action bar** in the reading view (`src/app/read/[chunkId]/page.tsx`, line ~126) uses `fixed bottom-0` — on iPhones with a home indicator, this bar will be partially obscured by the gesture area
+- Any future bottom navigation would also be affected
+
+**Recommendation:** Add `viewport-fit=cover` to the viewport meta tag. Then add `pb-[env(safe-area-inset-bottom)]` (or equivalent CSS) to all fixed bottom elements. The reading view bottom bar is the most critical fix.
+
+### Touch Target Sizes
+
+**Severity: High**
+
+Apple HIG recommends 44x44pt minimum tap targets; Material Design recommends 48x48dp. Several components fall below these thresholds.
+
+| Component | File | Issue |
+| --------- | ---- | ----- |
+| Book control action pills (Pause, Delete, etc.) | `src/app/book/[bookId]/_components/book-controls.tsx:82` | Small pill badges styled as tags, not tappable buttons. Well below 44pt height |
+| Chunk grid numbered squares | `src/app/book/[bookId]/_components/chunk-grid.tsx:52` | Tiny numbered boxes (~24-28px). With 234 chunks, these are nearly impossible to tap accurately |
+| Chunk size +/- buttons | `src/app/book/[bookId]/_components/chunk-size-control.tsx:43-77` | Small increment/decrement controls |
+| "Mark Read & Next" button | `src/app/read/[chunkId]/page.tsx` | Borderline — could be taller for a primary action |
+| Time picker dropdowns | `src/app/settings/page.tsx` | Small select dropdowns, hard to tap accurately |
+| Upload slider track | `src/app/upload/page.tsx` | Thin slider track, hard to grab with a finger |
+
+**Recommendation:** Increase padding on all pill-style action buttons to at least `py-2.5 px-4` (40px+ height). For the chunk grid, consider replacing individual numbered squares with a chapter-level progress bar on mobile. Add invisible touch padding around small controls using `min-h-[44px] min-w-[44px]`.
+
+### Viewport Height & Mobile Browser Chrome
+
+**Severity: Medium**
+
+**Good news:** The app does not appear to use `100vh` for layout, avoiding the classic mobile viewport bug where `100vh` includes the area behind the browser's URL bar.
+
+**Issue:** The reading view's fixed bottom bar uses `fixed bottom-0` which is fine for positioning, but without safe area insets (see above), the effective tappable area is reduced on notched devices. If a full-screen layout is ever added, it should use `100dvh` (dynamic viewport height) instead of `100vh`.
+
+### Mobile Keyboard & Input Handling
+
+**Severity: Medium**
+
+**Issues:**
+- The **login password field** (`src/app/login/page.tsx`) — verify it uses `type="password"` (likely does) but may be missing `autocomplete="current-password"` which helps password managers on mobile
+- The **settings email field** — should use `type="email"` and `inputMode="email"` for the correct mobile keyboard
+- The **chunk size number input** — should use `inputMode="numeric"` for a number pad on mobile
+- Fixed/sticky elements (like the reading view bottom bar) may jump or behave unexpectedly when the mobile keyboard opens — test with `visualViewport` API if issues arise
+
+**Recommendation:** Audit all `<input>` elements and add appropriate `type`, `inputMode`, and `autocomplete` attributes. This is low effort and significantly improves the mobile input experience.
+
+### Text Sizing & Accessibility
+
+**Severity: Medium**
+
+**Good:** Font sizes throughout the app use `rem` units via Tailwind's size classes (`text-sm`, `text-base`, `text-lg`, etc.), which means they scale with the user's browser/OS font size settings. This respects iOS Dynamic Type and Android font scaling.
+
+**Issues:**
+- Some UI elements use `text-xs` (12px at default scale) — this can be difficult to read on mobile, especially for older users or in bright sunlight. Consider `text-sm` (14px) as the minimum for body content
+- No `-webkit-text-size-adjust: 100%` in the global CSS — without this, iOS Safari may auto-inflate font sizes on orientation change
+
+**Recommendation:** Add `-webkit-text-size-adjust: 100%` to the global CSS body rule. Audit uses of `text-xs` and bump to `text-sm` where the text is meaningful (not decorative labels).
+
+### Scroll & Overflow Behavior
+
+**Severity: Medium**
+
+**Issues:**
+- No `overscroll-behavior` CSS set on the body or scrollable containers — on mobile browsers, pull-to-refresh and rubber-band scrolling may interfere with in-app scrolling, especially in the reading view
+- The **heatmap calendar** on the stats page (`src/app/stats/page.tsx`) overflows horizontally on screens narrower than ~400px, causing a horizontal scroll on the entire page
+- The **chunk grid** on the book detail page creates a very tall scrollable area on mobile — with 200+ chunks, users must scroll through a massive wall of tiny squares
+
+**Recommendation:** Add `overscroll-behavior-y: contain` to the reading view's scroll container to prevent pull-to-refresh from interrupting reading. For the heatmap, either make it horizontally scrollable within a contained `overflow-x-auto` wrapper (not the whole page) or switch to a vertical month-by-month layout on mobile.
+
+### Responsive Images
+
+**Severity: Medium**
+
+**Issues:**
+- Cover images in the reading view render at their natural size without `max-height` constraints — on mobile, a tall cover image fills the entire viewport and pushes reading content below the fold
+- No `loading="lazy"` on images that are below the fold (e.g., cover images in the book list if there were many books)
+- No `srcset` or responsive image variants — the same full-size cover is served to mobile and desktop
+
+**Recommendation:** Constrain cover images in the reading view to `max-h-[40vh]` with `object-contain`. Add `loading="lazy"` to non-critical images. Consider generating smaller thumbnail variants for the library card view.
+
+### Thumb Zone & Bottom Navigation
+
+**Severity: Medium**
+
+**Issues:**
+- Primary navigation is only in the header (top of page) — on mobile, this is outside the natural thumb zone. Users must reach to the top of the screen to navigate
+- The reading view places "Mark Read & Next" at the bottom (good for thumb reach), but "Back to Book" is also at the bottom as a secondary action — consider the risk of accidental taps
+- No bottom tab bar for global navigation — the app has 7 routes but no persistent nav. A bottom tab bar with Library / Stats / Settings would be the most mobile-friendly pattern
+
+**Recommendation:** If adding global navigation (already recommended in the main review), implement it as a **bottom tab bar on mobile** and a top/side nav on desktop. This puts navigation in the thumb zone and follows iOS/Android conventions.
+
+### Orientation (Landscape Mode)
+
+**Severity: Low**
+
+- The reading view should work fine in landscape due to the `max-w-[65ch]` reading column (if implemented)
+- The fixed bottom bar may take up too much vertical space in landscape — consider auto-hiding or reducing its height
+- The stats heatmap would actually benefit from landscape orientation, as the wider viewport would prevent clipping
+- No `orientation` media queries found — not necessarily needed, but landscape reading could benefit from wider margins
+
+### Mobile Performance
+
+**Severity: Low**
+
+**Good:** The app is server-rendered with Next.js, which gives good initial load performance on mobile. No heavy client-side JS frameworks or animations detected.
+
+**Minor issues:**
+- Cover images are not optimized — consider using Next.js `<Image>` component (if not already) for automatic WebP conversion and responsive sizing
+- The chunk grid with 200+ DOM elements may cause scroll jank on lower-end Android devices — virtualization or pagination would help
+
+### Mobile Audit Summary
+
+| Category                  | Status        | Severity |
+| ------------------------- | ------------- | -------- |
+| PWA / home screen support | Not implemented | Critical |
+| Safe area insets          | Not implemented | Critical |
+| Touch target sizes        | Multiple violations | High |
+| Viewport height           | OK (no 100vh bugs) | OK |
+| Mobile keyboard / inputs  | Missing attributes | Medium |
+| Text sizing (rem)         | Good          | OK |
+| Scroll / overflow         | Heatmap + chunk grid clip | Medium |
+| Responsive images         | No constraints | Medium |
+| Thumb zone / bottom nav   | Top-only nav  | Medium |
+| Orientation               | Untested, likely OK | Low |
+| Mobile performance        | Good baseline | Low |
+
+---
+
 ## Microinteractions & Polish
 
 **Missing or needs improvement:**
@@ -209,27 +364,36 @@ The warm off-white `#FAFAF7` background is excellent — gives a paper-like qual
 
 1. **Fix dark mode colors** — change background to `#1A1A1A`, text to `#E8E4DC`, card bg to `#242424`, borders to `#333`
 2. **Fix dark mode login page** — the card/button inversion is broken
-3. **Add global navigation** — at minimum, a header with Library / Stats / Settings links
+3. **Add global navigation** — bottom tab bar on mobile (Library / Stats / Settings), top nav on desktop
+4. **Add PWA support** — `manifest.json`, `apple-mobile-web-app-capable`, `theme-color` meta tags. Transforms the daily reading experience from a browser tab into a native-feeling app
+5. **Add safe area inset handling** — `viewport-fit=cover` on the viewport meta, `env(safe-area-inset-bottom)` padding on the reading view fixed bottom bar and any future bottom nav
 
 ### High Priority
 
-4. **Reading view: reduce cover image size** or move it above a clear divider; increase line-height to 1.75; add mobile padding
-5. **Library: add responsive grid** for book cards; fix title truncation on desktop
-6. **Make progress bars visible** — add track background, increase bar height
-7. **Standardize button hierarchy** across all pages
+6. **Fix touch target sizes** — book control action pills, chunk grid squares, chunk size +/- buttons, time picker dropdowns all fall below 44pt minimum
+7. **Reading view: reduce cover image size** (`max-h-[40vh]`) or move it above a clear divider; increase line-height to 1.75; add mobile padding
+8. **Library: add responsive grid** for book cards; fix title truncation on desktop
+9. **Make progress bars visible** — add track background, increase bar height
+10. **Standardize button hierarchy** across all pages
 
 ### Medium Priority
 
-8. **Verify serif webfont loading** (Literata/Source Serif Pro vs Georgia fallback)
-9. **Book detail: simplify chunk grid** — collapsible chapters or smaller indicators
-10. **Add hover/focus states** to interactive cards and buttons
-11. **Settings: fix section spacing** and button alignment
-12. **Upload: improve disabled button** visual distinction
+11. **Add proper input attributes** — `inputMode`, `autocomplete`, and correct `type` on all form inputs for mobile keyboard optimization
+12. **Fix heatmap overflow on mobile** — contain horizontal scroll or switch to vertical month layout on small screens
+13. **Add `overscroll-behavior-y: contain`** to reading view to prevent pull-to-refresh interference
+14. **Responsive cover images** — add `loading="lazy"`, constrain sizes, consider Next.js `<Image>` component
+15. **Verify serif webfont loading** (Literata/Source Serif Pro vs Georgia fallback)
+16. **Book detail: simplify chunk grid** — collapsible chapters or compact progress bar on mobile
+17. **Add hover/focus states** to interactive cards and buttons
+18. **Settings: fix section spacing** and button alignment
+19. **Upload: improve disabled button** visual distinction
+20. **Add `-webkit-text-size-adjust: 100%`** to prevent iOS Safari font inflation on orientation change
 
 ### Nice to Have
 
-13. Add page transition animations
-14. Add skeleton loading states
-15. Add "Mark Read" confirmation microinteraction
-16. Improve heatmap mobile responsiveness
-17. Add a book icon/logo to the login page
+21. Add page transition animations
+22. Add skeleton loading states
+23. Add "Mark Read" confirmation microinteraction
+24. Add a book icon/logo to the login page
+25. Test and optimize landscape reading experience
+26. Consider virtualizing the chunk grid for performance on low-end Android devices

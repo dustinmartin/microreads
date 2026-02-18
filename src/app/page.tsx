@@ -40,14 +40,15 @@ function BookCard({ book }: { book: Book }) {
   return (
     <Link
       href={`/book/${book.id}`}
-      className="group flex gap-4 rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-md"
+      className="group flex gap-4 rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
     >
       {/* Cover image or placeholder */}
-      <div className="relative h-28 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
+      <div className="relative h-28 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted dark:ring-1 dark:ring-white/10">
         {book.coverImage ? (
           <img
             src={`/api/${book.coverImage}`}
             alt={`Cover of ${book.title}`}
+            loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (
@@ -60,7 +61,7 @@ function BookCard({ book }: { book: Book }) {
       {/* Book info */}
       <div className="flex min-w-0 flex-1 flex-col justify-between">
         <div>
-          <h3 className="truncate font-serif text-sm font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">
+          <h3 className="line-clamp-2 font-serif text-sm font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">
             {book.title}
           </h3>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -70,9 +71,9 @@ function BookCard({ book }: { book: Book }) {
 
         <div className="mt-2 space-y-1.5">
           {/* Progress bar */}
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full bg-primary/70 transition-all"
+              className="h-full rounded-full bg-primary transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -90,7 +91,7 @@ function BookCard({ book }: { book: Book }) {
 
 function BookGrid({ bookList }: { bookList: Book[] }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {bookList.map((book) => (
         <BookCard key={book.id} book={book} />
       ))}
@@ -107,7 +108,7 @@ function EmptyState() {
       </p>
       <Link
         href="/upload"
-        className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         <Plus className="h-4 w-4" />
         Upload your first book
@@ -128,7 +129,7 @@ export default async function Home() {
   const hasBooks = allBooks.length > 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -143,7 +144,7 @@ export default async function Home() {
           </div>
           <Link
             href="/upload"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <Plus className="h-4 w-4" />
             Upload Book

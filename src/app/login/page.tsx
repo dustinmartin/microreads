@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { BookOpen } from "lucide-react";
 
 export default function LoginPage() {
   const [password, setPassword] = useState("");
@@ -41,6 +42,9 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Branding */}
         <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+            <BookOpen className="h-8 w-8 text-primary" />
+          </div>
           <h1 className="font-serif text-4xl font-bold tracking-tight text-foreground">
             Micro Reads
           </h1>
@@ -67,6 +71,7 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             autoFocus
+            autoComplete="current-password"
             placeholder="Enter your password"
             className="mt-2 block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
@@ -78,7 +83,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+            className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>

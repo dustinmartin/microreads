@@ -2,8 +2,7 @@
 
 import { useState, useCallback, useRef, type DragEvent, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Upload, BookOpen, ArrowLeft, FileText, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, BookOpen, FileText, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 type UploadResult = {
   id: string;
@@ -135,24 +134,16 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center rounded-lg border border-border p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-          <div>
-            <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
-              Upload Book
-            </h1>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              Add an epub to your reading library
-            </p>
-          </div>
+        <div>
+          <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
+            Upload Book
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Add an epub to your reading library
+          </p>
         </div>
 
         <div className="mt-8 space-y-6">
@@ -236,7 +227,7 @@ export default function UploadPage() {
               step={50}
               value={chunkSize}
               onChange={(e) => setChunkSize(Number(e.target.value))}
-              className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-muted accent-primary"
+              className="mt-3 h-2.5 w-full cursor-pointer appearance-none rounded-full bg-muted accent-primary"
             />
             <div className="mt-2 flex justify-between text-xs text-muted-foreground">
               <span>300</span>
@@ -262,7 +253,7 @@ export default function UploadPage() {
               type="button"
               onClick={() => handleSubmit("active")}
               disabled={!file || isUploading}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isUploading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -275,7 +266,7 @@ export default function UploadPage() {
               type="button"
               onClick={() => handleSubmit("queued")}
               disabled={!file || isUploading}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-50"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isUploading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

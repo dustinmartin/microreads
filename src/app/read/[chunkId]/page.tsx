@@ -103,14 +103,20 @@ export default async function ReadPage({
       </header>
 
       {/* Main content area */}
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+      <main className="mx-auto max-w-3xl px-5 py-8 sm:px-6 sm:py-12">
         {/* AI Recap block */}
         {chunk.aiRecap && <AiRecap recap={chunk.aiRecap} />}
+
+        {/* Cover image constraints */}
+        <style>{`
+          .prose-reader img { max-height: 40vh; object-fit: contain; margin-left: auto; margin-right: auto; }
+          .dark .prose-reader img { border: 1px solid rgba(232,228,220,0.1); border-radius: 0.5rem; }
+        `}</style>
 
         {/* Reading content */}
         <article
           className="prose-reader mx-auto"
-          style={{ maxWidth: "60ch" }}
+          style={{ maxWidth: "65ch" }}
           dangerouslySetInnerHTML={{ __html: chunk.contentHtml }}
         />
 

@@ -79,7 +79,7 @@ export default function BookControls({
   }
 
   const buttonBase =
-    "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-50";
+    "inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
   return (
     <div className="flex flex-wrap items-center gap-2">

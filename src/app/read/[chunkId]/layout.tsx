@@ -3,5 +3,5 @@ export default function ReadLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div>{children}</div>;
+  return <div className="min-h-screen" style={{ overscrollBehaviorY: 'contain' }}>{children}</div>;
 }

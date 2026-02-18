@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { db } from "@/lib/db";
 import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq, lt, sql } from "drizzle-orm";
-import { BookCheck, Type, Flame, Trophy, ArrowLeft } from "lucide-react";
+import { BookCheck, Type, Flame, Trophy } from "lucide-react";
 
 // --- Data fetching helpers ---
 
@@ -275,19 +274,10 @@ export default async function StatsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-hidden bg-background pb-20 md:pb-0">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-stone-100 hover:text-foreground dark:hover:bg-stone-800"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Home
-          </Link>
-        </div>
-        <h1 className="mt-4 font-serif text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
           Reading Stats
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">

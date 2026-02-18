@@ -48,7 +48,7 @@ export function ReadingActions({
   return (
     <div
       className="mx-auto mt-12 border-t border-[#2C2C2C]/10 pt-6 dark:border-[#E8E4DC]/10"
-      style={{ maxWidth: "60ch" }}
+      style={{ maxWidth: "65ch", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       {error && (
         <p className="mb-4 text-center text-sm text-red-600 dark:text-red-400">
@@ -58,7 +58,7 @@ export function ReadingActions({
       <div className="flex items-center justify-between">
         <button
           onClick={() => router.push(`/book/${bookId}`)}
-          className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium text-[#2C2C2C]/70 transition-colors hover:bg-[#2C2C2C]/5 hover:text-[#2C2C2C] dark:text-[#E8E4DC]/70 dark:hover:bg-[#E8E4DC]/5 dark:hover:text-[#E8E4DC]"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Book
@@ -67,7 +67,7 @@ export function ReadingActions({
         <button
           onClick={handleMarkRead}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />

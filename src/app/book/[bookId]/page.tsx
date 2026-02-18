@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   Circle,
   CircleDot,
-  ArrowLeft,
   Calendar,
   BookOpenCheck,
   BarChart3,
@@ -124,21 +123,12 @@ export default async function BookDetailPage({
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-        {/* Back link */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-[#2C2C2C]/60 transition-colors hover:text-[#2C2C2C] dark:text-[#E8E4DC]/50 dark:hover:text-[#E8E4DC]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Library
-        </Link>
-
         {/* Book header */}
-        <div className="mt-6 flex gap-6">
+        <div className="flex gap-6">
           {/* Cover */}
-          <div className="relative h-48 w-32 flex-shrink-0 overflow-hidden rounded-xl bg-[#2C2C2C]/5 shadow-md dark:bg-[#E8E4DC]/5">
+          <div className="relative h-36 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-[#2C2C2C]/5 shadow-md sm:h-48 sm:w-32 dark:bg-[#E8E4DC]/5 dark:ring-1 dark:ring-white/10">
             {book.coverImage ? (
               <img
                 src={`/api/${book.coverImage}`}
@@ -257,8 +247,31 @@ export default async function BookDetailPage({
                   </div>
                 </div>
 
-                {/* Chunk links */}
-                <div className="border-t border-[#2C2C2C]/5 px-4 py-2 dark:border-[#E8E4DC]/5">
+                {/* Mobile: Chapter progress row */}
+                <div className="border-t border-[#2C2C2C]/5 px-4 py-3 dark:border-[#E8E4DC]/5 md:hidden">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      {chapter.readCount} / {chapter.totalCount} chunks read
+                    </span>
+                    {chapter.status !== "read" && chapter.chunkIds[chapter.readCount] && (
+                      <Link
+                        href={`/read/${chapter.chunkIds[chapter.readCount] || chapter.chunkIds[0]}`}
+                        className="text-xs font-medium text-primary hover:underline"
+                      >
+                        Continue
+                      </Link>
+                    )}
+                  </div>
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${chapter.totalCount > 0 ? (chapter.readCount / chapter.totalCount) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Desktop: Full chunk grid */}
+                <div className="hidden border-t border-[#2C2C2C]/5 px-4 py-2 dark:border-[#E8E4DC]/5 md:block">
                   <ChunkGrid
                     chunkIds={chapter.chunkIds}
                     chunkIndices={chapter.chunkIndices}

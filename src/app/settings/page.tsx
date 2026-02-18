@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Save, Send, Mail } from "lucide-react";
+import { Save, Send, Mail } from "lucide-react";
 
 type Feedback = {
   type: "success" | "error";
@@ -128,18 +127,9 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
         <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-stone-100 hover:text-foreground dark:hover:bg-stone-800"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Home
-            </Link>
-          </div>
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
             Settings
           </h1>
           <div className="mt-8 flex items-center justify-center py-16">
@@ -151,19 +141,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-stone-100 hover:text-foreground dark:hover:bg-stone-800"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Home
-          </Link>
-        </div>
-        <h1 className="mt-4 font-serif text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground">
           Settings
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -184,7 +165,7 @@ export default function SettingsPage() {
         )}
 
         {/* Email Settings */}
-        <div className="mt-8 space-y-8">
+        <div className="mt-8 space-y-6">
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-serif text-lg font-semibold text-foreground">
               Email Delivery
@@ -205,6 +186,8 @@ export default function SettingsPage() {
                 <input
                   id="email_to"
                   type="email"
+                  inputMode="email"
+                  autoComplete="email"
                   value={emailTo}
                   onChange={(e) => setEmailTo(e.target.value)}
                   placeholder="you@example.com"
@@ -221,7 +204,7 @@ export default function SettingsPage() {
                   <select
                     value={sendHour}
                     onChange={(e) => setSendHour(parseInt(e.target.value, 10))}
-                    className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="min-h-[44px] rounded-lg border border-border bg-background px-3 py-2 text-base md:text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   >
                     {Array.from({ length: 24 }, (_, i) => (
                       <option key={i} value={i}>
@@ -233,7 +216,7 @@ export default function SettingsPage() {
                   <select
                     value={sendMinute}
                     onChange={(e) => setSendMinute(parseInt(e.target.value, 10))}
-                    className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="min-h-[44px] rounded-lg border border-border bg-background px-3 py-2 text-base md:text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   >
                     {[0, 15, 30, 45].map((m) => (
                       <option key={m} value={m}>
@@ -298,14 +281,16 @@ export default function SettingsPage() {
           </section>
 
           {/* Save button */}
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-          >
-            <Save className="h-4 w-4" />
-            {saving ? "Saving..." : "Save Settings"}
-          </button>
+          <div className="flex justify-end">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Save className="h-4 w-4" />
+              {saving ? "Saving..." : "Save Settings"}
+            </button>
+          </div>
 
           {/* Actions */}
           <section className="rounded-xl border border-border bg-card p-6">
@@ -318,7 +303,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleSendDigest}
                 disabled={sendingDigest}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-50"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="h-4 w-4" />
                 {sendingDigest ? "Sending..." : "Send Today's Digest Now"}
@@ -326,7 +311,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleSendTest}
                 disabled={sendingTest}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-50"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Mail className="h-4 w-4" />
                 {sendingTest ? "Sending..." : "Send Test Email"}

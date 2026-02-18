@@ -49,7 +49,7 @@ export default function ChunkGrid({
           <div key={chunkId} className="group relative">
             <Link
               href={`/read/${chunkId}`}
-              className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md px-1.5 text-xs font-medium transition-colors ${
+              className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md px-1.5 text-xs font-medium transition-all duration-200 hover:scale-110 min-h-[44px] min-w-[44px] md:min-h-7 md:min-w-7 ${
                 isCurrent
                   ? "bg-emerald-500 text-white shadow-sm dark:bg-emerald-400 dark:text-[#1A1A1A]"
                   : isRead
