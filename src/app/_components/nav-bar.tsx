@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BarChart3, Settings } from "lucide-react";
@@ -25,6 +26,19 @@ export function NavBar() {
 
   return (
     <>
+      {/* Mobile: top title bar */}
+      <header className="border-b border-border bg-background md:hidden">
+        <div className="flex items-center px-4 py-3">
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-serif text-lg font-bold tracking-tight text-foreground"
+          >
+            <Image src="/icon.svg" alt="" width={24} height={24} />
+            Micro Reads
+          </Link>
+        </div>
+      </header>
+
       {/* Mobile: bottom tab bar */}
       <nav
         className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-sm md:hidden"
@@ -56,8 +70,9 @@ export function NavBar() {
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
           <Link
             href="/"
-            className="font-serif text-lg font-bold tracking-tight text-foreground"
+            className="flex items-center gap-2 font-serif text-lg font-bold tracking-tight text-foreground"
           >
+            <Image src="/icon.svg" alt="" width={24} height={24} />
             Micro Reads
           </Link>
           <div className="flex items-center gap-1">
