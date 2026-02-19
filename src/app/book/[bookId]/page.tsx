@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { db } from "@/lib/db";
 import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -17,6 +16,7 @@ import {
 import BookControls from "./_components/book-controls";
 import ChunkSizeControl from "./_components/chunk-size-control";
 import ChunkGrid from "./_components/chunk-grid";
+import CollapsibleChapter from "./_components/collapsible-chapter";
 
 export default async function BookDetailPage({
   params,
@@ -223,68 +223,52 @@ export default async function BookDetailPage({
             Chapters
           </h2>
           <div className="mt-4 space-y-2">
-            {chapters.map((chapter, chapterIdx) => (
-              <div
-                key={chapterIdx}
-                className="rounded-xl border border-[#2C2C2C]/8 bg-white/60 dark:border-[#E8E4DC]/8 dark:bg-white/[0.02]"
-              >
-                {/* Chapter header */}
-                <div className="flex items-center gap-3 px-4 py-3">
-                  {chapter.status === "read" ? (
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-emerald-500 dark:text-emerald-400" />
-                  ) : chapter.status === "partial" ? (
-                    <CircleDot className="h-5 w-5 flex-shrink-0 text-amber-500 dark:text-amber-400" />
-                  ) : (
-                    <Circle className="h-5 w-5 flex-shrink-0 text-[#2C2C2C]/20 dark:text-[#E8E4DC]/20" />
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-sm font-medium text-[#2C2C2C] dark:text-[#E8E4DC]">
-                      {chapter.title}
-                    </h3>
-                    <p className="text-xs text-[#2C2C2C]/40 dark:text-[#E8E4DC]/30">
-                      {chapter.readCount} / {chapter.totalCount} chunks read
-                    </p>
-                  </div>
-                </div>
+            {chapters.map((chapter, chapterIdx) => {
+              const isCurrent = chapter.chunkIndices.some(
+                (idx) => idx === book.currentChunkIndex
+              );
 
-                {/* Mobile: Chapter progress row */}
-                <div className="border-t border-[#2C2C2C]/5 px-4 py-3 dark:border-[#E8E4DC]/5 md:hidden">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {chapter.readCount} / {chapter.totalCount} chunks read
-                    </span>
-                    {chapter.status !== "read" && chapter.chunkIds[chapter.readCount] && (
-                      <Link
-                        href={`/read/${chapter.chunkIds[chapter.readCount] || chapter.chunkIds[0]}`}
-                        className="text-xs font-medium text-primary hover:underline"
-                      >
-                        Continue
-                      </Link>
-                    )}
-                  </div>
-                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${chapter.totalCount > 0 ? (chapter.readCount / chapter.totalCount) * 100 : 0}%` }}
+              return (
+                <div
+                  key={chapterIdx}
+                  className="rounded-xl border border-[#2C2C2C]/8 bg-white/60 dark:border-[#E8E4DC]/8 dark:bg-white/[0.02]"
+                >
+                  <CollapsibleChapter
+                    defaultOpen={isCurrent || chapter.status === "partial"}
+                    header={
+                      <>
+                        {chapter.status === "read" ? (
+                          <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-emerald-500 dark:text-emerald-400" />
+                        ) : chapter.status === "partial" ? (
+                          <CircleDot className="h-5 w-5 flex-shrink-0 text-amber-500 dark:text-amber-400" />
+                        ) : (
+                          <Circle className="h-5 w-5 flex-shrink-0 text-[#2C2C2C]/20 dark:text-[#E8E4DC]/20" />
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <h3 className="truncate text-sm font-medium text-[#2C2C2C] dark:text-[#E8E4DC]">
+                            {chapter.title}
+                          </h3>
+                          <p className="text-xs text-[#2C2C2C]/40 dark:text-[#E8E4DC]/30">
+                            {chapter.readCount} / {chapter.totalCount} chunks read
+                          </p>
+                        </div>
+                      </>
+                    }
+                  >
+                    <ChunkGrid
+                      chunkIds={chapter.chunkIds}
+                      chunkIndices={chapter.chunkIndices}
+                      readChunkIds={chapter.chunkIds.filter(
+                        (id, i) =>
+                          chapter.chunkIndices[i] < book.currentChunkIndex ||
+                          readChunkIds.has(id)
+                      )}
+                      currentChunkIndex={book.currentChunkIndex}
                     />
-                  </div>
+                  </CollapsibleChapter>
                 </div>
-
-                {/* Desktop: Full chunk grid */}
-                <div className="hidden border-t border-[#2C2C2C]/5 px-4 py-2 dark:border-[#E8E4DC]/5 md:block">
-                  <ChunkGrid
-                    chunkIds={chapter.chunkIds}
-                    chunkIndices={chapter.chunkIndices}
-                    readChunkIds={chapter.chunkIds.filter(
-                      (id, i) =>
-                        chapter.chunkIndices[i] < book.currentChunkIndex ||
-                        readChunkIds.has(id)
-                    )}
-                    currentChunkIndex={book.currentChunkIndex}
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       </div>
