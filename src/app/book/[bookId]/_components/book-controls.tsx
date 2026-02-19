@@ -72,7 +72,7 @@ export default function BookControls({
     setLoading(true);
     try {
       await fetch(`/api/books/${bookId}`, { method: "DELETE" });
-      router.push("/");
+      window.location.href = "/";
     } finally {
       setLoading(false);
     }
