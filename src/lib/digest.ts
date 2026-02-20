@@ -8,6 +8,7 @@ import { DigestEmail } from "@/lib/email/digest-template";
 import type { DigestEmailProps } from "@/lib/email/digest-template";
 import { createElement } from "react";
 import { generateChunkToken } from "@/lib/tokens";
+import { hasTtsConfigured } from "@/lib/elevenlabs";
 
 interface MailAttachment {
   filename: string;
@@ -288,6 +289,8 @@ export async function buildDigestProps(): Promise<{
   }> = [];
   const attachments: MailAttachment[] = [];
 
+  const hasTts = await hasTtsConfigured();
+
   let totalWordCount = 0;
 
   for (const book of activeBooks) {
@@ -335,6 +338,7 @@ export async function buildDigestProps(): Promise<{
       progress,
       chunkHtml,
       readUrl: `${baseUrl}/read/${chunk.id}?token=${token}`,
+      listenUrl: hasTts ? `${baseUrl}/read/${chunk.id}?token=${token}&autoplay=true` : undefined,
     });
 
     const isLastChunk = book.currentChunkIndex >= book.totalChunks - 1;

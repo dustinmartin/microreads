@@ -22,6 +22,7 @@ interface BookSection {
   progress: number;
   chunkHtml: string;
   readUrl: string;
+  listenUrl?: string;
 }
 
 export interface DigestEmailProps {
@@ -101,10 +102,25 @@ export function DigestEmail({
                 />
               </Section>
 
-              {/* CTA Button */}
-              <Button style={ctaButton} href={book.readUrl}>
-                Read on Web
-              </Button>
+              {/* CTA Buttons */}
+              <table cellPadding="0" cellSpacing="0">
+                <tbody>
+                  <tr>
+                    <td>
+                      <Button style={ctaButton} href={book.readUrl}>
+                        Read on Web
+                      </Button>
+                    </td>
+                    {book.listenUrl && (
+                      <td style={{ paddingLeft: "8px" }}>
+                        <Button style={listenButton} href={book.listenUrl}>
+                          🎧 Listen
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                </tbody>
+              </table>
 
               {index < books.length - 1 && <Hr style={bookDivider} />}
             </Section>
@@ -314,6 +330,17 @@ const chunkContent: React.CSSProperties = {
 
 const ctaButton: React.CSSProperties = {
   backgroundColor: "#5B4A3F",
+  color: "#FFFFFF",
+  fontSize: "14px",
+  fontWeight: 600,
+  padding: "10px 24px",
+  borderRadius: "6px",
+  textDecoration: "none",
+  display: "inline-block",
+};
+
+const listenButton: React.CSSProperties = {
+  backgroundColor: "#7B6A5F",
   color: "#FFFFFF",
   fontSize: "14px",
   fontWeight: 600,

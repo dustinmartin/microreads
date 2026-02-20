@@ -26,6 +26,9 @@ export default function SettingsPage() {
   const [sendMinute, setSendMinute] = useState(30);
   const [ollamaEndpoint, setOllamaEndpoint] = useState("http://localhost:11434");
   const [ollamaModel, setOllamaModel] = useState("qwen2.5:7b");
+  const [elevenLabsApiKey, setElevenLabsApiKey] = useState("");
+  const [elevenLabsVoiceId, setElevenLabsVoiceId] = useState("21m00Tcm4TlvDq8ikWAM");
+  const [openaiTtsApiKey, setOpenaiTtsApiKey] = useState("");
   const [timezone, setTimezone] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -49,6 +52,12 @@ export default function SettingsPage() {
           setOllamaEndpoint(data.ollama_endpoint as string);
         if (data.ollama_model !== undefined)
           setOllamaModel(data.ollama_model as string);
+        if (data.elevenlabs_api_key !== undefined)
+          setElevenLabsApiKey(data.elevenlabs_api_key as string);
+        if (data.elevenlabs_voice_id !== undefined)
+          setElevenLabsVoiceId(data.elevenlabs_voice_id as string);
+        if (data.openai_tts_api_key !== undefined)
+          setOpenaiTtsApiKey(data.openai_tts_api_key as string);
       })
       .catch(() => {
         setFeedback({ type: "error", message: "Failed to load settings." });
@@ -72,6 +81,9 @@ export default function SettingsPage() {
           send_time: timeToCron(sendHour, sendMinute),
           ollama_endpoint: ollamaEndpoint,
           ollama_model: ollamaModel,
+          elevenlabs_api_key: elevenLabsApiKey,
+          elevenlabs_voice_id: elevenLabsVoiceId,
+          openai_tts_api_key: openaiTtsApiKey,
         }),
       });
       if (!res.ok) throw new Error("Failed to save");
@@ -276,6 +288,81 @@ export default function SettingsPage() {
                   placeholder="qwen2.5:7b"
                   className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 />
+              </div>
+            </div>
+          </section>
+
+          {/* Text-to-Speech Settings */}
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="font-serif text-lg font-semibold text-foreground">
+              Text-to-Speech
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Configure text-to-speech providers for audio playback of your reading chunks
+            </p>
+
+            <div className="mt-6 space-y-5">
+              {/* ElevenLabs API key */}
+              <div>
+                <label
+                  htmlFor="elevenlabs_api_key"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  ElevenLabs API key
+                </label>
+                <input
+                  id="elevenlabs_api_key"
+                  type="password"
+                  value={elevenLabsApiKey}
+                  onChange={(e) => setElevenLabsApiKey(e.target.value)}
+                  placeholder="sk_..."
+                  className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Get your API key from elevenlabs.io. Leave blank to disable audio.
+                </p>
+              </div>
+
+              {/* Voice ID */}
+              <div>
+                <label
+                  htmlFor="elevenlabs_voice_id"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  Voice ID
+                </label>
+                <input
+                  id="elevenlabs_voice_id"
+                  type="text"
+                  value={elevenLabsVoiceId}
+                  onChange={(e) => setElevenLabsVoiceId(e.target.value)}
+                  placeholder="21m00Tcm4TlvDq8ikWAM"
+                  className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Default: Rachel. Find voice IDs in your ElevenLabs dashboard.
+                </p>
+              </div>
+
+              {/* OpenAI TTS API key */}
+              <div>
+                <label
+                  htmlFor="openai_tts_api_key"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  OpenAI API key
+                </label>
+                <input
+                  id="openai_tts_api_key"
+                  type="password"
+                  value={openaiTtsApiKey}
+                  onChange={(e) => setOpenaiTtsApiKey(e.target.value)}
+                  placeholder="sk-..."
+                  className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Get your API key from platform.openai.com. Used as fallback when ElevenLabs is unavailable.
+                </p>
               </div>
             </div>
           </section>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { deleteBookAudioFiles } from "@/lib/elevenlabs";
 import crypto from "crypto";
 
 export async function POST(
@@ -66,6 +67,12 @@ export async function POST(
         .set({ currentChunkIndex: newIndex })
         .where(eq(books.id, chunk.bookId));
     }
+  }
+
+  if (bookCompleted) {
+    deleteBookAudioFiles(chunk.bookId).catch((err) =>
+      console.error("Audio cleanup failed:", err)
+    );
   }
 
   // Find the next chunk

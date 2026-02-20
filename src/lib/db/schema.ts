@@ -50,3 +50,18 @@ export const settings = sqliteTable("settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
 });
+
+export const audioCache = sqliteTable("audio_cache", {
+  id: text("id").primaryKey(),
+  chunkId: text("chunk_id")
+    .notNull()
+    .unique()
+    .references(() => chunks.id, { onDelete: "cascade" }),
+  bookId: text("book_id")
+    .notNull()
+    .references(() => books.id, { onDelete: "cascade" }),
+  filePath: text("file_path").notNull(),
+  voiceId: text("voice_id").notNull(),
+  fileSizeBytes: integer("file_size_bytes"),
+  createdAt: text("created_at").notNull(),
+});

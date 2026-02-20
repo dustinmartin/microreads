@@ -10,6 +10,9 @@ function isPublicPath(pathname: string): boolean {
   // /read/[chunkId] routes use token auth from emails
   if (pathname.startsWith("/read/")) return true;
 
+  // Chunk audio API uses its own token validation
+  if (/^\/api\/chunks\/[^/]+\/audio$/.test(pathname)) return true;
+
   // API auth routes
   if (pathname === "/api/auth/logout") return true;
 

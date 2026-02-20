@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { books, chunks, readingLog } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { buildChapterRuns } from "@/lib/chapter-runs";
+import { deleteBookAudioFiles } from "@/lib/elevenlabs";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -118,6 +119,12 @@ export async function PATCH(
     await db.update(books).set(updates).where(eq(books.id, id));
   }
 
+  if (status === "completed") {
+    deleteBookAudioFiles(id).catch((err) =>
+      console.error("Audio cleanup failed:", err)
+    );
+  }
+
   const [updatedBook] = await db.select().from(books).where(eq(books.id, id));
 
   return NextResponse.json(updatedBook);
@@ -133,6 +140,9 @@ export async function DELETE(
   if (!book) {
     return NextResponse.json({ error: "Book not found" }, { status: 404 });
   }
+
+  // Delete audio files first (before chunks are deleted, since audioCache references chunk data)
+  await deleteBookAudioFiles(id);
 
   // Delete reading_log entries first (before chunks cascade deletes them)
   await db.delete(readingLog).where(eq(readingLog.bookId, id));
