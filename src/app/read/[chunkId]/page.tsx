@@ -5,9 +5,9 @@ import { db } from "@/lib/db";
 import { books, chunks } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { hasTtsConfigured } from "@/lib/elevenlabs";
-import { AiRecap } from "./ai-recap";
+import { hasAiConfigured } from "@/lib/ai";
 import { ReadingActions } from "./_components/reading-actions";
-import { AudioPlayer } from "./_components/audio-player";
+import { ChunkToolbar } from "./_components/chunk-toolbar";
 import { verifyChunkToken } from "@/lib/tokens";
 import { cookies } from "next/headers";
 
@@ -50,6 +50,7 @@ export default async function ReadPage({
   }
 
   const hasTts = await hasTtsConfigured();
+  const hasAi = await hasAiConfigured();
 
   // Fetch the chunk
   const [chunk] = await db.select().from(chunks).where(eq(chunks.id, chunkId));
@@ -108,15 +109,15 @@ export default async function ReadPage({
 
       {/* Main content area */}
       <main className="mx-auto max-w-3xl px-5 py-8 sm:px-6 sm:py-12">
-        {/* AI Recap block */}
-        {chunk.aiRecap && <AiRecap recap={chunk.aiRecap} />}
-
-        {/* Audio player */}
-        {hasTts && (
-          <AudioPlayer
+        {/* Audio + Summary toolbar */}
+        {(hasTts || (hasAi && hasValidSession)) && (
+          <ChunkToolbar
             chunkId={chunkId}
+            showAudio={hasTts}
+            showSummary={hasAi && hasValidSession}
             autoplay={autoplay === "true"}
             token={token}
+            cachedSummary={chunk.aiRecap}
           />
         )}
 

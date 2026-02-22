@@ -28,6 +28,7 @@ export default function SettingsPage() {
   const [ollamaModel, setOllamaModel] = useState("qwen2.5:7b");
   const [elevenLabsApiKey, setElevenLabsApiKey] = useState("");
   const [elevenLabsVoiceId, setElevenLabsVoiceId] = useState("21m00Tcm4TlvDq8ikWAM");
+  const [aiApiKey, setAiApiKey] = useState("");
   const [openaiTtsApiKey, setOpenaiTtsApiKey] = useState("");
   const [timezone, setTimezone] = useState("");
   const [loading, setLoading] = useState(true);
@@ -52,6 +53,8 @@ export default function SettingsPage() {
           setOllamaEndpoint(data.ollama_endpoint as string);
         if (data.ollama_model !== undefined)
           setOllamaModel(data.ollama_model as string);
+        if (data.ai_api_key !== undefined)
+          setAiApiKey(data.ai_api_key as string);
         if (data.elevenlabs_api_key !== undefined)
           setElevenLabsApiKey(data.elevenlabs_api_key as string);
         if (data.elevenlabs_voice_id !== undefined)
@@ -81,6 +84,7 @@ export default function SettingsPage() {
           send_time: timeToCron(sendHour, sendMinute),
           ollama_endpoint: ollamaEndpoint,
           ollama_model: ollamaModel,
+          ai_api_key: aiApiKey,
           elevenlabs_api_key: elevenLabsApiKey,
           elevenlabs_voice_id: elevenLabsVoiceId,
           openai_tts_api_key: openaiTtsApiKey,
@@ -247,20 +251,20 @@ export default function SettingsPage() {
           {/* AI Settings */}
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-serif text-lg font-semibold text-foreground">
-              AI Configuration
+              AI Summaries
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Configure the Ollama instance used for generating recaps
+              Configure the AI provider for chapter summaries (any OpenAI-compatible API)
             </p>
 
             <div className="mt-6 space-y-5">
-              {/* Ollama endpoint */}
+              {/* API endpoint */}
               <div>
                 <label
                   htmlFor="ollama_endpoint"
                   className="block text-sm font-medium text-foreground"
                 >
-                  Ollama endpoint URL
+                  API endpoint
                 </label>
                 <input
                   id="ollama_endpoint"
@@ -270,15 +274,18 @@ export default function SettingsPage() {
                   placeholder="http://localhost:11434"
                   className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Ollama, OpenAI, or any OpenAI-compatible endpoint
+                </p>
               </div>
 
-              {/* Ollama model */}
+              {/* Model */}
               <div>
                 <label
                   htmlFor="ollama_model"
                   className="block text-sm font-medium text-foreground"
                 >
-                  Ollama model name
+                  Model
                 </label>
                 <input
                   id="ollama_model"
@@ -288,6 +295,27 @@ export default function SettingsPage() {
                   placeholder="qwen2.5:7b"
                   className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 />
+              </div>
+
+              {/* API key */}
+              <div>
+                <label
+                  htmlFor="ai_api_key"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  API key
+                </label>
+                <input
+                  id="ai_api_key"
+                  type="password"
+                  value={aiApiKey}
+                  onChange={(e) => setAiApiKey(e.target.value)}
+                  placeholder="sk-..."
+                  className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Required for cloud providers. Leave blank for local Ollama.
+                </p>
               </div>
             </div>
           </section>

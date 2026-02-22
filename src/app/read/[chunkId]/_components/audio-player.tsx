@@ -112,68 +112,68 @@ export function AudioPlayer({ chunkId, autoplay, token }: AudioPlayerProps) {
     }
   }
 
-  return (
-    <div className="mx-auto" style={{ maxWidth: "65ch" }}>
-      {state === "idle" ||
-      state === "loading" ||
-      state === "ready" ||
-      state === "error" ? (
-        <div>
-          <button
-            onClick={handleListen}
-            disabled={state === "loading"}
-            className="mb-6 inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {state === "loading" ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : state === "ready" ? (
-              <Play className="h-4 w-4" />
-            ) : (
-              <Headphones className="h-4 w-4" />
-            )}
-            {state === "loading"
-              ? "Generating audio..."
-              : state === "ready"
-                ? "Listen"
-                : "Listen"}
-          </button>
-          {state === "error" && errorMsg && (
-            <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-              {errorMsg}. Tap to retry.
-            </p>
-          )}
-        </div>
-      ) : (
-        <div
-          className={`mb-6 flex items-center gap-2 transition-all duration-300 ease-out ${
-            showControls
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-2 opacity-0"
-          }`}
+  if (
+    state === "idle" ||
+    state === "loading" ||
+    state === "ready" ||
+    state === "error"
+  ) {
+    return (
+      <div>
+        <button
+          onClick={handleListen}
+          disabled={state === "loading"}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <button
-            onClick={handleRewind}
-            className="inline-flex items-center justify-center rounded-lg border border-border p-2.5 text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Rewind 15 seconds"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </button>
-          <button
-            onClick={handlePlayPause}
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            {state === "playing" ? (
-              <>
-                <Pause className="h-4 w-4" /> Pause
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" /> Play
-              </>
-            )}
-          </button>
-        </div>
-      )}
+          {state === "loading" ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : state === "ready" ? (
+            <Play className="h-4 w-4" />
+          ) : (
+            <Headphones className="h-4 w-4" />
+          )}
+          {state === "loading"
+            ? "Generating audio..."
+            : "Listen"}
+        </button>
+        {state === "error" && errorMsg && (
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+            {errorMsg}. Tap to retry.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`flex items-center gap-2 transition-all duration-300 ease-out ${
+        showControls
+          ? "translate-y-0 opacity-100"
+          : "-translate-y-2 opacity-0"
+      }`}
+    >
+      <button
+        onClick={handleRewind}
+        className="inline-flex items-center justify-center rounded-lg border border-border px-2.5 py-2.5 text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label="Rewind 15 seconds"
+      >
+        <RotateCcw className="h-4 w-4" />
+      </button>
+      <button
+        onClick={handlePlayPause}
+        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        {state === "playing" ? (
+          <>
+            <Pause className="h-4 w-4" /> Pause
+          </>
+        ) : (
+          <>
+            <Play className="h-4 w-4" /> Play
+          </>
+        )}
+      </button>
     </div>
   );
 }
