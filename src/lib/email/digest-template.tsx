@@ -45,19 +45,14 @@ export function DigestEmail({
   return (
     <Html lang="en">
       <Head>
-        <Font
-          fontFamily="Georgia"
-          fallbackFontFamily="serif"
-        />
+        <Font fontFamily="Georgia" fallbackFontFamily="serif" />
       </Head>
       <Preview>{previewText}</Preview>
       <Body style={body}>
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
-            <Text style={headerTitle}>
-              MICRO READS &middot; {date}
-            </Text>
+            <Text style={headerTitle}>MICRO READS &middot; {date}</Text>
             <Text style={headerSubtitle}>Your morning reading</Text>
           </Section>
 
@@ -108,7 +103,7 @@ export function DigestEmail({
                   <tr>
                     <td>
                       <Button style={ctaButton} href={book.readUrl}>
-                        Read on Web
+                        📖 Read
                       </Button>
                     </td>
                     {book.listenUrl && (
@@ -131,21 +126,28 @@ export function DigestEmail({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerStats}>
-              Today: {books.length} book{books.length !== 1 ? "s" : ""} &middot; ~{totalReadingMinutes} min reading
+              Today: {books.length} book{books.length !== 1 ? "s" : ""} &middot;
+              ~{totalReadingMinutes} min reading
             </Text>
             {streak > 0 && (
               <Text style={streakText}>
                 {streak} day streak {streak >= 7 ? "-- keep it going!" : ""}
               </Text>
             )}
-            <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
+            <table
+              cellPadding="0"
+              cellSpacing="0"
+              style={{ width: "100%", textAlign: "center" as const }}
+            >
               <tbody>
                 <tr>
                   <td>
                     <Link href={libraryUrl} style={footerLink}>
                       Open Library
                     </Link>
-                    <Text style={footerLinkSeparator}>&nbsp;&middot;&nbsp;</Text>
+                    <Text style={footerLinkSeparator}>
+                      &nbsp;&middot;&nbsp;
+                    </Text>
                     <Link href={`${libraryUrl}#send-more`} style={footerLink}>
                       Send More
                     </Link>
@@ -162,11 +164,7 @@ export function DigestEmail({
 
 export default DigestEmail;
 
-function applyInlineStyle(
-  html: string,
-  tag: string,
-  style: string
-): string {
+function applyInlineStyle(html: string, tag: string, style: string): string {
   const tagRegex = new RegExp(`<${tag}(\\s[^>]*)?>`, "gi");
   return html.replace(tagRegex, (match, attrs = "") => {
     if (/\sstyle\s*=/.test(match)) {
@@ -182,52 +180,52 @@ function normalizeChunkHtml(chunkHtml: string): string {
   html = applyInlineStyle(
     html,
     "p",
-    "margin:0 0 16px 0;line-height:1.65;font-size:15px;color:#3D3832;"
+    "margin:0 0 16px 0;line-height:1.65;font-size:15px;color:#3D3832;",
   );
   html = applyInlineStyle(
     html,
     "blockquote",
-    "margin:0 0 16px 0;padding-left:12px;border-left:3px solid #E8E4DC;color:#4A433D;"
+    "margin:0 0 16px 0;padding-left:12px;border-left:3px solid #E8E4DC;color:#4A433D;",
   );
   html = applyInlineStyle(
     html,
     "ul",
-    "margin:0 0 16px 20px;padding:0;line-height:1.65;font-size:15px;color:#3D3832;"
+    "margin:0 0 16px 20px;padding:0;line-height:1.65;font-size:15px;color:#3D3832;",
   );
   html = applyInlineStyle(
     html,
     "ol",
-    "margin:0 0 16px 20px;padding:0;line-height:1.65;font-size:15px;color:#3D3832;"
+    "margin:0 0 16px 20px;padding:0;line-height:1.65;font-size:15px;color:#3D3832;",
   );
   html = applyInlineStyle(
     html,
     "li",
-    "margin:0 0 6px 0;line-height:1.65;font-size:15px;color:#3D3832;"
+    "margin:0 0 6px 0;line-height:1.65;font-size:15px;color:#3D3832;",
   );
   html = applyInlineStyle(
     html,
     "h1",
-    "margin:0 0 12px 0;line-height:1.3;font-size:22px;color:#2D2A26;"
+    "margin:0 0 12px 0;line-height:1.3;font-size:22px;color:#2D2A26;",
   );
   html = applyInlineStyle(
     html,
     "h2",
-    "margin:0 0 12px 0;line-height:1.3;font-size:20px;color:#2D2A26;"
+    "margin:0 0 12px 0;line-height:1.3;font-size:20px;color:#2D2A26;",
   );
   html = applyInlineStyle(
     html,
     "h3",
-    "margin:0 0 10px 0;line-height:1.35;font-size:18px;color:#2D2A26;"
+    "margin:0 0 10px 0;line-height:1.35;font-size:18px;color:#2D2A26;",
   );
   html = applyInlineStyle(
     html,
     "img",
-    "max-width:100%;height:auto;border:0;display:block;margin:12px 0;"
+    "max-width:100%;height:auto;border:0;display:block;margin:12px 0;",
   );
   html = applyInlineStyle(
     html,
     "a",
-    "color:#5B4A3F;text-decoration:underline;"
+    "color:#5B4A3F;text-decoration:underline;",
   );
 
   return html;
