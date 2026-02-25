@@ -47,7 +47,7 @@ export function ReadingActions({
 
   return (
     <div
-      className="mx-auto mt-12 border-t border-[#2C2C2C]/10 pt-6 dark:border-[#E8E4DC]/10"
+      className="mx-auto mt-12 border-t border-foreground/10 pt-6"
       style={{ maxWidth: "65ch", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       {error && (

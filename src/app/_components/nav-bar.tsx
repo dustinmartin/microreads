@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BarChart3, Settings } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 const navItems = [
   { href: "/", label: "Library", icon: Home },
@@ -28,7 +29,7 @@ export function NavBar() {
     <>
       {/* Mobile: top title bar */}
       <header className="border-b border-border bg-background md:hidden">
-        <div className="flex items-center px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-3">
           <Link
             href="/"
             className="flex items-center gap-2 font-serif text-lg font-bold tracking-tight text-foreground"
@@ -36,6 +37,7 @@ export function NavBar() {
             <Image src="/icon.svg" alt="" width={24} height={24} />
             Micro Reads
           </Link>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -93,6 +95,7 @@ export function NavBar() {
                 </Link>
               );
             })}
+            <ThemeToggle />
           </div>
         </div>
       </header>

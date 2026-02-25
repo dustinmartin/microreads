@@ -128,7 +128,7 @@ export default async function BookDetailPage({
         {/* Book header */}
         <div className="flex gap-6">
           {/* Cover */}
-          <div className="relative h-36 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-[#2C2C2C]/5 shadow-md sm:h-48 sm:w-32 dark:bg-[#E8E4DC]/5 dark:ring-1 dark:ring-white/10">
+          <div className="relative h-36 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-foreground/5 shadow-md sm:h-48 sm:w-32 dark:ring-1 dark:ring-white/10">
             {book.coverImage ? (
               <img
                 src={`/api/${book.coverImage}`}
@@ -137,7 +137,7 @@ export default async function BookDetailPage({
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                <BookOpen className="h-12 w-12 text-[#2C2C2C]/20 dark:text-[#E8E4DC]/20" />
+                <BookOpen className="h-12 w-12 text-foreground/20" />
               </div>
             )}
           </div>
@@ -145,10 +145,10 @@ export default async function BookDetailPage({
           {/* Metadata */}
           <div className="flex flex-1 flex-col justify-between py-1">
             <div>
-              <h1 className="font-serif text-3xl font-bold tracking-tight text-[#2C2C2C] dark:text-[#E8E4DC]">
+              <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground">
                 {book.title}
               </h1>
-              <p className="mt-1 text-base text-[#2C2C2C]/60 dark:text-[#E8E4DC]/50">
+              <p className="mt-1 text-base text-foreground/60 dark:text-foreground/50">
                 {book.author}
               </p>
               <div className="mt-3 flex items-center gap-3">
@@ -157,7 +157,7 @@ export default async function BookDetailPage({
                 >
                   {book.status}
                 </span>
-                <span className="text-xs text-[#2C2C2C]/40 dark:text-[#E8E4DC]/30">
+                <span className="text-xs text-foreground/40 dark:text-foreground/30">
                   Added {formattedAddedDate}
                 </span>
               </div>
@@ -170,13 +170,13 @@ export default async function BookDetailPage({
 
             {/* Progress bar */}
             <div className="mt-4">
-              <div className="flex items-center justify-between text-xs text-[#2C2C2C]/60 dark:text-[#E8E4DC]/50">
+              <div className="flex items-center justify-between text-xs text-foreground/60 dark:text-foreground/50">
                 <span>{progress}% complete</span>
                 <span>
                   {chunksRead} / {book.totalChunks} chunks
                 </span>
               </div>
-              <div className="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-[#2C2C2C]/5 dark:bg-[#E8E4DC]/5">
+              <div className="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-foreground/5">
                 <div
                   className="h-full rounded-full bg-emerald-500/70 transition-all dark:bg-emerald-400/70"
                   style={{ width: `${progress}%` }}
@@ -219,7 +219,7 @@ export default async function BookDetailPage({
 
         {/* Chapter list */}
         <section className="mt-10">
-          <h2 className="font-serif text-lg font-semibold text-[#2C2C2C] dark:text-[#E8E4DC]">
+          <h2 className="font-serif text-lg font-semibold text-foreground">
             Chapters
           </h2>
           <div className="mt-4 space-y-2">
@@ -231,7 +231,7 @@ export default async function BookDetailPage({
               return (
                 <div
                   key={chapterIdx}
-                  className="rounded-xl border border-[#2C2C2C]/8 bg-white/60 dark:border-[#E8E4DC]/8 dark:bg-white/[0.02]"
+                  className="rounded-xl border border-foreground/8 bg-white/60 dark:border-foreground/8 dark:bg-white/[0.02]"
                 >
                   <CollapsibleChapter
                     defaultOpen={isCurrent || chapter.status === "partial"}
@@ -242,13 +242,13 @@ export default async function BookDetailPage({
                         ) : chapter.status === "partial" ? (
                           <CircleDot className="h-5 w-5 flex-shrink-0 text-amber-500 dark:text-amber-400" />
                         ) : (
-                          <Circle className="h-5 w-5 flex-shrink-0 text-[#2C2C2C]/20 dark:text-[#E8E4DC]/20" />
+                          <Circle className="h-5 w-5 flex-shrink-0 text-foreground/20" />
                         )}
                         <div className="min-w-0 flex-1">
-                          <h3 className="truncate text-sm font-medium text-[#2C2C2C] dark:text-[#E8E4DC]">
+                          <h3 className="truncate text-sm font-medium text-foreground">
                             {chapter.title}
                           </h3>
-                          <p className="text-xs text-[#2C2C2C]/40 dark:text-[#E8E4DC]/30">
+                          <p className="text-xs text-foreground/40 dark:text-foreground/30">
                             {chapter.readCount} / {chapter.totalCount} chunks read
                           </p>
                         </div>
@@ -286,12 +286,12 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-[#2C2C2C]/8 bg-white/60 p-4 dark:border-[#E8E4DC]/8 dark:bg-white/[0.02]">
-      <div className="text-[#2C2C2C]/30 dark:text-[#E8E4DC]/30">{icon}</div>
-      <p className="mt-2 text-lg font-semibold tabular-nums text-[#2C2C2C] dark:text-[#E8E4DC]">
+    <div className="rounded-xl border border-foreground/8 bg-white/60 p-4 dark:border-foreground/8 dark:bg-white/[0.02]">
+      <div className="text-foreground/30">{icon}</div>
+      <p className="mt-2 text-lg font-semibold tabular-nums text-foreground">
         {value}
       </p>
-      <p className="font-serif text-xs text-[#2C2C2C]/50 dark:text-[#E8E4DC]/40">
+      <p className="font-serif text-xs text-foreground/50 dark:text-foreground/40">
         {label}
       </p>
     </div>

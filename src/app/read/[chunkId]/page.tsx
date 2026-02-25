@@ -82,25 +82,25 @@ export default async function ReadPage({
     book.totalChunks > 0 ? (chunk.index / book.totalChunks) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] dark:bg-[#1A1A1A]">
+    <div className="min-h-screen bg-background">
       {/* Top bar */}
-      <header className="border-b border-[#E8E4DC]/30 dark:border-[#E8E4DC]/10">
+      <header className="border-b border-foreground/10 dark:border-foreground/10">
         <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1">
               <Link
                 href={`/book/${book.id}`}
-                className="truncate text-sm font-medium text-[#2C2C2C] hover:underline dark:text-[#E8E4DC]"
+                className="truncate text-sm font-medium text-foreground hover:underline"
               >
                 {book.title}
               </Link>
               {chunk.chapterTitle && (
-                <p className="mt-0.5 truncate text-xs text-[#2C2C2C]/60 dark:text-[#E8E4DC]/50">
+                <p className="mt-0.5 truncate text-xs text-foreground/60 dark:text-foreground/50">
                   {chunk.chapterTitle}
                 </p>
               )}
             </div>
-            <span className="ml-4 flex-shrink-0 text-xs text-[#2C2C2C]/50 dark:text-[#E8E4DC]/40">
+            <span className="ml-4 flex-shrink-0 text-xs text-foreground/50 dark:text-foreground/40">
               Chunk {chunkNumber} of {book.totalChunks}
             </span>
           </div>
@@ -143,9 +143,9 @@ export default async function ReadPage({
       </main>
 
       {/* Progress bar at very bottom */}
-      <div className="fixed bottom-0 left-0 right-0 h-1 bg-[#2C2C2C]/5 dark:bg-[#E8E4DC]/5">
+      <div className="fixed bottom-0 left-0 right-0 h-1 bg-foreground/5">
         <div
-          className="h-full bg-[#2C2C2C]/20 transition-all dark:bg-[#E8E4DC]/20"
+          className="h-full bg-foreground/20 transition-all"
           style={{ width: `${progressPercent}%` }}
         />
       </div>

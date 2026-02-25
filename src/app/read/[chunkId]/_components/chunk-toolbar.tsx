@@ -101,14 +101,14 @@ export function ChunkToolbar({
 
       {/* Summary box */}
       {summaryState === "showing" && isBoxVisible && (
-        <div className="mt-4 rounded-lg bg-[#2C2C2C]/[0.04] px-5 py-4 dark:bg-[#E8E4DC]/[0.06]">
-          <p className="mb-3 text-sm font-medium text-[#2C2C2C]/60 dark:text-[#E8E4DC]/50">
+        <div className="mt-4 rounded-lg bg-foreground/[0.04] px-5 py-4 dark:bg-foreground/[0.06]">
+          <p className="mb-3 text-sm font-medium text-foreground/60 dark:text-foreground/50">
             Summary: {chapterTitle}
           </p>
           {summary.split("\n\n").map((paragraph, i) => (
             <p
               key={i}
-              className="mb-3 text-base italic leading-relaxed text-[#2C2C2C]/70 last:mb-0 dark:text-[#E8E4DC]/60"
+              className="mb-3 text-base italic leading-relaxed text-foreground/70 last:mb-0 dark:text-foreground/60"
             >
               {paragraph}
             </p>
