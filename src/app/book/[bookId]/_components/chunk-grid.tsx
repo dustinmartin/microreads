@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { X, Undo2 } from "lucide-react";
-import { useTransition, useRef, useState, useCallback, useEffect } from "react";
+import { X } from "lucide-react";
+import { useTransition } from "react";
 
 interface ChunkGridProps {
   chunkIds: string[];
@@ -65,99 +65,16 @@ interface ChunkTileProps {
 }
 
 function ChunkTile({ chunkId, index, isRead, isCurrent, onUnread }: ChunkTileProps) {
-  const [confirming, setConfirming] = useState(false);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const didLongPress = useRef(false);
-  const confirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearTimers = useCallback(() => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-    if (confirmTimer.current) {
-      clearTimeout(confirmTimer.current);
-      confirmTimer.current = null;
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => clearTimers();
-  }, [clearTimers]);
-
-  // Start long-press timer on touch
-  function handleTouchStart() {
-    if (!isRead || isCurrent) return;
-    didLongPress.current = false;
-    longPressTimer.current = setTimeout(() => {
-      didLongPress.current = true;
-      setConfirming(true);
-      // Haptic feedback where supported
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
-      // Auto-cancel after 3 seconds
-      confirmTimer.current = setTimeout(() => {
-        setConfirming(false);
-      }, 3000);
-    }, 500);
-  }
-
-  // Cancel on scroll/move
-  function handleTouchMove() {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }
-
-  // Prevent navigation after long-press
-  function handleTouchEnd(e: React.TouchEvent) {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-    if (didLongPress.current) {
-      e.preventDefault();
-      didLongPress.current = false;
-    }
-  }
-
-  // Handle tap on confirmation state
-  function handleConfirmTap(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    clearTimers();
-    setConfirming(false);
-    onUnread(chunkId);
-  }
-
-  // Desktop hover unread button click
-  function handleDesktopUnread(e: React.MouseEvent) {
+  function handleUnreadClick(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     onUnread(chunkId);
-  }
-
-  if (confirming) {
-    return (
-      <button
-        onClick={handleConfirmTap}
-        onBlur={() => setConfirming(false)}
-        className="inline-flex h-7 min-h-[44px] min-w-[44px] items-center justify-center rounded-md bg-red-500 px-1.5 text-white shadow-sm transition-all duration-200 md:min-h-7 md:min-w-7 dark:bg-red-500"
-      >
-        <Undo2 className="h-3.5 w-3.5" />
-      </button>
-    );
   }
 
   return (
     <div className="group relative">
       <Link
         href={`/read/${chunkId}`}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md px-1.5 text-xs font-medium transition-all duration-200 hover:scale-110 min-h-[44px] min-w-[44px] md:min-h-7 md:min-w-7 ${
           isCurrent
             ? "bg-emerald-500 text-white shadow-sm dark:bg-emerald-400 dark:text-background"
@@ -170,11 +87,11 @@ function ChunkTile({ chunkId, index, isRead, isCurrent, onUnread }: ChunkTilePro
       </Link>
       {isRead && !isCurrent && (
         <button
-          onClick={handleDesktopUnread}
-          className="absolute -right-1 -top-1 hidden h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white shadow-sm hover:bg-red-600 group-hover:flex"
+          onClick={handleUnreadClick}
+          className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow-sm active:bg-red-700 md:hidden md:h-4 md:w-4 md:group-hover:flex md:hover:bg-red-600"
           title="Mark as unread"
         >
-          <X className="h-2.5 w-2.5" />
+          <X className="h-3 w-3 md:h-2.5 md:w-2.5" />
         </button>
       )}
     </div>

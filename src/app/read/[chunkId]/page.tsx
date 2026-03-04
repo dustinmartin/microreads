@@ -82,7 +82,7 @@ export default async function ReadPage({
     book.totalChunks > 0 ? (chunk.index / book.totalChunks) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-hidden bg-background">
       {/* Top bar */}
       <header className="border-b border-foreground/10 dark:border-foreground/10">
         <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
@@ -90,7 +90,7 @@ export default async function ReadPage({
             <div className="min-w-0 flex-1">
               <Link
                 href={`/book/${book.id}`}
-                className="truncate text-sm font-medium text-foreground hover:underline"
+                className="block truncate text-sm font-medium text-foreground hover:underline"
               >
                 {book.title}
               </Link>

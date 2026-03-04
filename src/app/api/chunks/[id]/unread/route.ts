@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { books, chunks, readingLog } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gte, inArray } from "drizzle-orm";
 
 export async function POST(
   _request: NextRequest,
@@ -16,11 +16,22 @@ export async function POST(
     return NextResponse.json({ error: "Chunk not found" }, { status: 404 });
   }
 
-  // Delete all reading_log entries for this chunk
+  // Find all chunk IDs at or after this chunk's index (same book)
+  const chunksToUnread = await db
+    .select({ id: chunks.id })
+    .from(chunks)
+    .where(and(eq(chunks.bookId, chunk.bookId), gte(chunks.index, chunk.index)));
+
+  const chunkIdsToUnread = chunksToUnread.map((c) => c.id);
+
+  // Delete reading_log entries for this chunk and all subsequent chunks
   await db
     .delete(readingLog)
     .where(
-      and(eq(readingLog.chunkId, chunk.id), eq(readingLog.bookId, chunk.bookId))
+      and(
+        eq(readingLog.bookId, chunk.bookId),
+        inArray(readingLog.chunkId, chunkIdsToUnread)
+      )
     );
 
   // Look up the book
@@ -29,29 +40,18 @@ export async function POST(
     .from(books)
     .where(eq(books.id, chunk.bookId));
 
-  // If this chunk is before current progress, reset currentChunkIndex
-  if (chunk.index < book.currentChunkIndex) {
+  // Reset currentChunkIndex to this chunk's position
+  if (chunk.index <= book.currentChunkIndex || book.status === "completed") {
     const updates: Record<string, unknown> = {
       currentChunkIndex: chunk.index,
     };
 
-    // If book was completed, revert to active
     if (book.status === "completed") {
       updates.status = "active";
       updates.completedAt = null;
     }
 
     await db.update(books).set(updates).where(eq(books.id, chunk.bookId));
-  } else if (book.status === "completed") {
-    // Current chunk was the last one — revert completion
-    await db
-      .update(books)
-      .set({
-        currentChunkIndex: chunk.index,
-        status: "active",
-        completedAt: null,
-      })
-      .where(eq(books.id, chunk.bookId));
   }
 
   return NextResponse.json({ success: true });

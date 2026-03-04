@@ -134,6 +134,7 @@
   font-size: 1.15rem;
   line-height: 1.75;
   color: #2c2c2c;
+  overflow-wrap: break-word;
 }
 
 .dark .prose-reader {
