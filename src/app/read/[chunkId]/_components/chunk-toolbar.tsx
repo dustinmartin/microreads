@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BookOpen, Loader2 } from "lucide-react";
 import { AudioPlayer } from "./audio-player";
+import type { AudioState } from "./audio-sync-reader";
 
 type SummaryState = "idle" | "loading" | "showing" | "error";
 
@@ -13,6 +14,8 @@ interface ChunkToolbarProps {
   autoplay: boolean;
   token?: string;
   cachedSummary?: string | null;
+  audioState: AudioState;
+  setCurrentTimeImmediate: (time: number) => void;
 }
 
 export function ChunkToolbar({
@@ -22,7 +25,11 @@ export function ChunkToolbar({
   autoplay,
   token,
   cachedSummary,
+  audioState,
+  setCurrentTimeImmediate,
 }: ChunkToolbarProps) {
+  const isPlayerExpanded =
+    audioState.playerState === "playing" || audioState.playerState === "paused";
   const hasCached = !!cachedSummary;
   const [summaryState, setSummaryState] = useState<SummaryState>(hasCached ? "showing" : "idle");
   const [summary, setSummary] = useState(cachedSummary ?? "");
@@ -71,16 +78,28 @@ export function ChunkToolbar({
 
   return (
     <div className="mx-auto mb-6" style={{ maxWidth: "65ch" }}>
-      {/* Button row */}
-      <div className="flex items-center gap-3">
+      {/* Button row — stack vertically when player is expanded */}
+      <div
+        className={
+          isPlayerExpanded
+            ? "flex flex-col gap-3"
+            : "flex items-center gap-3"
+        }
+      >
         {showAudio && (
-          <AudioPlayer chunkId={chunkId} autoplay={autoplay} token={token} />
+          <AudioPlayer
+            chunkId={chunkId}
+            autoplay={autoplay}
+            token={token}
+            audioState={audioState}
+            setCurrentTimeImmediate={setCurrentTimeImmediate}
+          />
         )}
         {showSummary && (
           <button
             onClick={handleSummaryClick}
             disabled={summaryState === "loading"}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 self-start rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {summaryState === "loading" ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -7,7 +7,7 @@ import { eq, and } from "drizzle-orm";
 import { hasTtsConfigured } from "@/lib/elevenlabs";
 import { hasAiConfigured } from "@/lib/ai";
 import { ReadingActions } from "./_components/reading-actions";
-import { ChunkToolbar } from "./_components/chunk-toolbar";
+import { AudioSyncReader } from "./_components/audio-sync-reader";
 import { verifyChunkToken } from "@/lib/tokens";
 import { cookies } from "next/headers";
 
@@ -109,29 +109,21 @@ export default async function ReadPage({
 
       {/* Main content area */}
       <main className="mx-auto max-w-3xl px-5 py-8 sm:px-6 sm:py-12">
-        {/* Audio + Summary toolbar */}
-        {(hasTts || (hasAi && hasValidSession)) && (
-          <ChunkToolbar
-            chunkId={chunkId}
-            showAudio={hasTts}
-            showSummary={hasAi && hasValidSession}
-            autoplay={autoplay === "true"}
-            token={token}
-            cachedSummary={chunk.aiRecap}
-          />
-        )}
-
         {/* Cover image constraints */}
         <style>{`
           .prose-reader img { max-height: 40vh; object-fit: contain; margin-left: auto; margin-right: auto; }
           .dark .prose-reader img { border: 1px solid rgba(232,228,220,0.1); border-radius: 0.5rem; }
         `}</style>
 
-        {/* Reading content */}
-        <article
-          className="prose-reader mx-auto"
-          style={{ maxWidth: "65ch" }}
-          dangerouslySetInnerHTML={{ __html: chunk.contentHtml }}
+        {/* Audio + Summary toolbar + Reading content with sync */}
+        <AudioSyncReader
+          chunkId={chunkId}
+          showAudio={hasTts}
+          showSummary={hasAi && hasValidSession}
+          autoplay={autoplay === "true"}
+          token={token}
+          cachedSummary={chunk.aiRecap}
+          contentHtml={chunk.contentHtml}
         />
 
         {/* Actions */}

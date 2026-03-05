@@ -244,6 +244,62 @@
   margin: 1.25em 0;
 }
 
+/* Audio highlight for synced reading */
+.audio-highlight {
+  background-color: rgba(59, 130, 246, 0.08);
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  margin-left: -4px;
+  margin-right: -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.dark .audio-highlight {
+  background-color: rgba(96, 165, 250, 0.12);
+}
+
+/* Audio progress bar */
+.audio-progress {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    var(--foreground) var(--progress-percent, 0%),
+    color-mix(in oklch, var(--foreground) 15%, transparent) var(--progress-percent, 0%)
+  );
+  cursor: pointer;
+  outline: none;
+}
+
+.audio-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--foreground);
+  cursor: pointer;
+  border: none;
+}
+
+.audio-progress::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--foreground);
+  cursor: pointer;
+  border: none;
+}
+
+.audio-progress::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: transparent;
+}
+
 /* Safe area inset utility for fixed bottom elements */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
