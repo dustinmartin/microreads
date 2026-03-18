@@ -110,19 +110,22 @@ async function extractCover(
  * from the table of contents when available.
  */
 async function extractChapters(epub: EPub): Promise<ParsedChapter[]> {
-  // Build a lookup from spine href to TOC title
+  // Build a lookup from normalized spine href to TOC title.
+  // Keep the first entry per file so the highest-level TOC heading wins.
   const tocTitleMap = new Map<string, string>();
   if (epub.toc) {
     for (const tocItem of epub.toc) {
       if (tocItem.href && tocItem.title) {
-        // TOC hrefs may include fragment identifiers — strip them for matching
-        const hrefBase = tocItem.href.split("#")[0];
-        tocTitleMap.set(hrefBase, tocItem.title);
+        const key = normalizeTocHref(tocItem.href);
+        if (!tocTitleMap.has(key)) {
+          tocTitleMap.set(key, tocItem.title);
+        }
       }
     }
   }
 
   const chapters: ParsedChapter[] = [];
+  let previousTitle = "";
 
   for (const spineItem of epub.flow) {
     if (!spineItem.id) continue;
@@ -130,15 +133,42 @@ async function extractChapters(epub: EPub): Promise<ParsedChapter[]> {
     try {
       const html = await epub.getChapterAsync(spineItem.id);
 
-      // Resolve chapter title: try TOC first, fall back to spine item title or id
+      // Resolve chapter title with fallback chain:
+      // 1. epub2 spine item title
+      // 2. TOC lookup by normalized href
+      // 3. Extract from HTML heading tags
+      // 4. Inherit from previous chapter (handles multi-file chapters)
+      // 5. "Untitled" as last resort
       let chapterTitle = spineItem.title ?? "";
       if (!chapterTitle && spineItem.href) {
-        const hrefBase = spineItem.href.split("#")[0];
-        chapterTitle = tocTitleMap.get(hrefBase) ?? "";
+        const key = normalizeTocHref(spineItem.href);
+        chapterTitle = tocTitleMap.get(key) ?? "";
       }
       if (!chapterTitle) {
-        chapterTitle = spineItem.id;
+        const htmlTitle = extractTitleFromHtml(html);
+        if (htmlTitle) {
+          // If the HTML heading is a substring of the previous title,
+          // this spine item is likely a continuation of the same chapter
+          // (e.g., TOC says "Chapter 1: Hadrian", HTML just has <h1>Hadrian</h1>)
+          if (
+            previousTitle &&
+            htmlTitle.length >= 3 &&
+            previousTitle.toLowerCase().includes(htmlTitle.toLowerCase())
+          ) {
+            chapterTitle = previousTitle;
+          } else {
+            chapterTitle = htmlTitle;
+          }
+        }
       }
+      if (!chapterTitle && previousTitle) {
+        chapterTitle = previousTitle;
+      }
+      if (!chapterTitle) {
+        chapterTitle = "Untitled";
+      }
+
+      previousTitle = chapterTitle;
 
       chapters.push({
         title: chapterTitle,
@@ -151,7 +181,45 @@ async function extractChapters(epub: EPub): Promise<ParsedChapter[]> {
     }
   }
 
-  return chapters;
+  // Merge consecutive chapters with the same title into a single entry.
+  // Multi-file chapters (common in EPUBs) should be treated as one chapter
+  // so the chunker doesn't force-flush at arbitrary XHTML file boundaries.
+  const merged: ParsedChapter[] = [];
+  for (const ch of chapters) {
+    const prev = merged[merged.length - 1];
+    if (prev && prev.title === ch.title) {
+      prev.html += "\n" + ch.html;
+    } else {
+      merged.push({ ...ch });
+    }
+  }
+
+  return merged;
+}
+
+/**
+ * Normalize a TOC href for consistent lookup — strips fragments, decodes
+ * URL-encoding, normalizes slashes, and lowercases.
+ */
+function normalizeTocHref(href: string): string {
+  let base = href.split("#")[0];
+  try { base = decodeURIComponent(base); } catch {}
+  return base.replace(/\\/g, "/").replace(/^\/+/, "").trim().toLowerCase();
+}
+
+/**
+ * Try to extract a title from HTML heading tags (h1, h2, h3).
+ * Returns the first heading's text content, or empty string if none found.
+ */
+function extractTitleFromHtml(html: string): string {
+  for (const tag of ["h1", "h2", "h3"]) {
+    const match = html.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i"));
+    if (match) {
+      const text = match[1].replace(/<[^>]*>/g, "").trim();
+      if (text.length > 0 && text.length <= 200) return text;
+    }
+  }
+  return "";
 }
 
 /**
